@@ -9,6 +9,20 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.24.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Core\Classes\Remanga\" />
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties settings_1json__JsonSchema=" &quot;token&quot;: &quot;asdasd&quot;" /></VisualStudio></ProjectExtensions>
 
 </Project>
