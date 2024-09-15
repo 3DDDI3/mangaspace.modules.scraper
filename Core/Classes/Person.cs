@@ -9,9 +9,7 @@ namespace Scraper.Core.Classes
         public PersonType type { get; set; }
         public string description { get; set; }
         public IImage image { get; set; }
-        public Person()
-        {
-            image = new Image();
-        }
+        public string altName { get; set; }
+        public string url { get; set; }
     }
 }

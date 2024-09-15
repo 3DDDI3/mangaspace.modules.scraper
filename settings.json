@@ -1,7 +1,19 @@
 {
   "token": "asdasd",
-  "RabbitMq": {
-    "baseUrl": "asd",
-    "catalogUrl": "asd123"
+  "remanga": {
+    "baseUrl": "https://remanga.org/",
+    "catalogUrl": "manga",
+    "pages": "?page="
+  },
+  "mangalib": {
+    "baseUrl": "https://mangalib.me/",
+    "catalogUrl": "manga-list",
+    "pages": "?page="
+  },
+  "server": {
+    "url": "5.188.44.210",
+    "username": "admin",
+    "password": "w823eG7a5W3l",
+    "rootPath": "/storage/"
   }
 }

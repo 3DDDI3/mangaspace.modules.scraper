@@ -9,7 +9,9 @@ namespace Scraper.Core.Classes
 {
     public class RemangaPage : IPage
     {
+        public string baseUrl { get; set; }
         public string catalogUrl { get; set; }
+        public string pageUrl { get; set; }
         public List<string> pages { get; set; }
         public IPageRange pageRange { get; set; }
 

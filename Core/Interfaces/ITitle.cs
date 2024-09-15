@@ -17,15 +17,18 @@ namespace Scraper.Core.Interfaces
         /// Английское название
         /// </summary>
         public string altName { get; set; }
+        public IImage cover { get; set; }
+        public string otherNames { get; set; }
         public string description { get; set; }
         public string type { get; set; }
         public string releaseFormat { get; set; }
         public ushort releaseYear { get; set; }
+        public AgeLimiter ageLimiter { get; set; }
         public TitleStatus titleStatus { get; set; }
         public TranslateStatus translateStatus { get; set; }
-        public List<IPerson> authors { get; set; }
-        public List<IPerson> publishers { get; set; }
-        public List<IPerson> painters { get; set; }
-        public List<IPerson> translators { get; set; }
+        public List<IChapter> chapters { get; set; }
+        public List<string> contacts { get; set; }
+        public List<string> genres { get; set; }
+        public List<IPerson> persons { get; set; }
     }
 }

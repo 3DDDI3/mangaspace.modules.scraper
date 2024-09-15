@@ -8,10 +8,33 @@ namespace Scraper.Core.Enums
 {
     public enum TitleStatus
     {
-        ongoing = 1,
+        /// <summary>
+        /// Онгоинг
+        /// </summary>
+        continues = 1,
+        /// <summary>
+        /// Анонс
+        /// </summary>
         announcement = 2,
+        /// <summary>
+        /// Завершен
+        /// </summary>
         finished = 3,
+        /// <summary>
+        /// Приостановлен
+        /// </summary>
         suspended = 4,
-        terminated = 5
+        /// <summary>
+        /// Прекращен
+        /// </summary>
+        terminated = 5,
+        /// <summary>
+        /// Лицензировано
+        /// </summary>
+        licensed=6,
+        /// <summary>
+        /// Нет переводчика
+        /// </summary>
+        noTranslator=7,
     }
 }

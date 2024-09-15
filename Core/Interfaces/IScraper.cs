@@ -1,9 +1,4 @@
 ﻿using OpenQA.Selenium.Edge;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Scraper.Core.Interfaces
 {
@@ -14,5 +9,11 @@ namespace Scraper.Core.Interfaces
         public EdgeOptions edgeOptions { get; set; }
         public IPage page { get; set; }
         public ITitle title { get; set; }
+        public void getPages();
+        public void getChapters();
+        public void getImages();
+        public void getTitleInfo();
+        public void getPersons();
+        public void parse();
     }
 }

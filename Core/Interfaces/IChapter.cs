@@ -11,6 +11,8 @@ namespace Scraper.Core.Interfaces
         public string name { get; set; }
         public string volume { get; set; }
         public string number { get; set; }
-        public IPerson person { get; set; }
+        public string url { get; set; }
+        public IPerson translator { get; set; }
+        public List<IImage> images { get; set; }
     }
 }

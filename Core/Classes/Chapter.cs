@@ -12,7 +12,13 @@ namespace Scraper.Core.Classes
         public string name {  get; set; }
         public string volume { get; set; }
         public string number { get; set; }
-        public IPerson person { get; set; }
-        public Chapter() => person = new Person();
+        public string url { get; set; }
+        public IPerson translator { get; set; }
+        public List<IImage> images { get; set; }
+        public Chapter()
+        {
+            translator = new Person();
+            images = new List<IImage>();
+        }
     }
 }

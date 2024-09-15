@@ -8,9 +8,9 @@ namespace Scraper.Core.Interfaces
 {
     public interface IPage
     {
+        public string baseUrl { get; set; }
         public string catalogUrl { get; set; }
-        public List<string> pages { get; set; }
+        public string pageUrl { get; set; }
         public IPageRange pageRange { get; set; }
-        public void getPages();
     }
 }
