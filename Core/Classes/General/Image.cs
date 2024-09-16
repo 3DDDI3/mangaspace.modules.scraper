@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Scraper.Core.Classes
+namespace Scraper.Core.Classes.General
 {
     public class Image : IImage
     {

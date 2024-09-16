@@ -5,9 +5,9 @@ using Microsoft.Extensions.Logging;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium;
 using RabbitMQ.Client;
-using Scraper.Core.Classes;
 using Scraper.Core.Sources;
-using Configuration = Scraper.Core.Classes.Configuration;
+using Configuration = Scraper.Core.Classes.General.Configuration;
+using Scraper.Core.Classes.General;
 
 public class Program
 {

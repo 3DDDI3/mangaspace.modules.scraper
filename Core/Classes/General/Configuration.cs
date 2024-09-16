@@ -1,9 +1,8 @@
-﻿
-namespace Scraper.Core.Classes
+﻿namespace Scraper.Core.Classes.General
 {
     public class Configuration
     {
-        public string token {  get; set; }
+        public string token { get; set; }
         public ScraperConfiguration scraperConfiguration { get; set; }
         public ServerConfiguration serverConfiguration { get; set; }
     }
@@ -17,7 +16,7 @@ namespace Scraper.Core.Classes
 
     public class ServerConfiguration
     {
-        public string url { get;set; }
+        public string url { get; set; }
         public string username { get; set; }
         public string password { get; set; }
         public string rootPath { get; set; }

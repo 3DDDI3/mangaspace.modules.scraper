@@ -5,15 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scraper.Core.Classes
+namespace Scraper.Core.Classes.General
 {
     public class Page : IPage
     {
         public string? baseUrl { get; set; }
         public string? catalogUrl { get; set; }
-        public string? pageUrl{ get; set; }
+        public string? pageUrl { get; set; }
         public IPageRange pageRange { get; set; }
-        public Page() {
+        public Page()
+        {
             pageRange = new PageRange();
         }
     }

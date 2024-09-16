@@ -6,7 +6,6 @@ namespace Scraper.Core.Interfaces
     {
         public string baseUrl { get; set; }
         public EdgeDriver driver { get; set; }
-        public EdgeOptions edgeOptions { get; set; }
         public IPage page { get; set; }
         public ITitle title { get; set; }
         public void getPages();

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scraper.Core.Classes
+namespace Scraper.Core.Classes.General
 {
     public class PageRange : IPageRange
     {

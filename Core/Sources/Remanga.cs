@@ -10,13 +10,29 @@ using System.Net;
 using Scraper.Core.Classes;
 using System.Text.RegularExpressions;
 using ImageSharp = SixLabors.ImageSharp.Image;
+using Scraper.Core.Classes.Uploader;
+using Scraper.Core.Classes.General;
+using OpenQA.Selenium.Edge;
 
 namespace Scraper.Core.Sources
 {
-    public class Remanga:Scraper.Core.Classes.Scraper
+    public class Remanga:IScraper
     {
         private IServer server;
-        public Remanga(Configuration conf) : base(conf) {
+        public string baseUrl { get; set; }
+        public EdgeDriver driver { get; set; }
+        public IPage page { get; set; }
+        public ITitle title { get; set; }
+
+        public Remanga(Configuration conf)
+        {
+            title = new Title()
+            {
+                persons = new List<IPerson>(),
+                contacts = new List<string>(),
+                genres = new List<string>(),
+                chapters = new List<IChapter>()
+            };
             page = new Page() { baseUrl = conf.scraperConfiguration.baseUrl, catalogUrl = conf.scraperConfiguration.catalogUrl, pageUrl = conf.scraperConfiguration.pages };
             server = new Server()
             {
@@ -25,8 +41,16 @@ namespace Scraper.Core.Sources
                 password = conf.serverConfiguration.password,
                 rootPath = conf.serverConfiguration.rootPath
             };
+            startDriver();
         }
-        public override void getPages()
+
+        private void startDriver(EdgeOptions edgeOptions = null)
+        {
+            edgeOptions = edgeOptions ?? new EdgeOptions();
+            driver = new EdgeDriver(edgeOptions);
+        }
+
+        public void getPages()
         {
             driver.Navigate().GoToUrl($"{page.baseUrl}{page.catalogUrl}");
             driver.FindElement(By.XPath("//input[@class='SwitchBase_input__9Z5ZO Switch_input__bHF07']")).Click();
@@ -36,7 +60,8 @@ namespace Scraper.Core.Sources
                 to = int.Parse(driver.FindElement(By.XPath("//div[@class='Pagination_pagination__bJbKa']/button[contains(@class, 'Button_button___CisL Button_button___CisL Button_text__IGNQ6 Button_text-primary__WgBRV hidden-xs')][last()]")).Text)
             };           
         }
-        public override void parse()
+
+        public void parse()
         {
             getPages();
 
@@ -56,7 +81,8 @@ namespace Scraper.Core.Sources
                 break;
             }
         }
-        public override void getTitleInfo()
+
+        public void getTitleInfo()
         {
             if (driver.FindElements(By.XPath("//div[@class='flex p-4']/button[@class='Button_button___CisL Button_button___CisL Button_contained__8_KFk Button_contained-primary__IViyX Button_fullWidth__Dgoqh']")).Count > 0)
                 driver.FindElement(By.XPath("//div[@class='flex p-4']/button[@class='Button_button___CisL Button_button___CisL Button_contained__8_KFk Button_contained-primary__IViyX Button_fullWidth__Dgoqh']")).Click();
@@ -162,7 +188,7 @@ namespace Scraper.Core.Sources
             }
         }
 
-        public override void getPersons()
+        public void getPersons()
         {
             foreach (var item in driver.FindElements(By.XPath("//div[@class='flex flex-row gap-4 overflow-x-auto flex-nowrap md:flex-wrap']"))[0].FindElements(By.XPath(".//a")))
             {
@@ -209,7 +235,7 @@ namespace Scraper.Core.Sources
                 if (person.type == PersonType.translator)
                 {
                     person.name = driver.FindElement(By.XPath("//h1[@class='Typography_h3___I3IT Typography_lineClamp-1__ijYgf Typography_lineClamp__Pa1wi Team_name__FLyYc']")).Text;
-                    person.altName = driver.FindElement(By.XPath("//p[@class='Typography_body1__YTqxB Team_tagline__wIfbi']")).Text;
+                    person.altName = driver.FindElements(By.XPath("//p[@class='Typography_body1__YTqxB Team_tagline__wIfbi']")).Count() > 0 ? driver.FindElement(By.XPath("//p[@class='Typography_body1__YTqxB Team_tagline__wIfbi']")).Text : null;
                     person.image = new Image(driver.FindElement(By.XPath("//div[@class='Avatar_avatar__hG0bH Avatar_colorDefault__MHL29 Team_avatar__lj_mG']/img")).GetAttribute("src"));
                     title.contacts = driver.FindElements(By.XPath("//a[@class='Button_button___CisL Button_button___CisL Button_text__IGNQ6 Button_text-primary__WgBRV Team_socialButton__2oZZA']")).Select(x => x.GetAttribute("href")).ToList();
                     person.description = driver.FindElements(By.XPath("//div[@class='Team_content__Tshsc']/div[@class='Team_section__CdfV4']")).Count > 0 ? driver.FindElement(By.XPath("//div[@class='Team_content__Tshsc']/div[@class='Team_section__CdfV4']")).Text : null;
@@ -232,8 +258,7 @@ namespace Scraper.Core.Sources
                 }
             }
         }
-
-        public override void getChapters()
+        public void getChapters()
         {
             driver.Navigate().GoToUrl($"{page.baseUrl}{page.catalogUrl}/omniscient-reader?p=chapters");
             var chapterCount = int.Parse(driver.FindElement(By.XPath("//div[@class='flex flex-col items-start'][1]/p[2]")).Text);
@@ -266,7 +291,7 @@ namespace Scraper.Core.Sources
             }
         }
 
-        public override async void getImages()
+        public async void getImages()
         {
             title.chapters.Reverse();
             foreach (var chapter in title.chapters)
@@ -276,7 +301,7 @@ namespace Scraper.Core.Sources
                 HttpClient client = new HttpClient();
                 var response = client.GetAsync($"https://api.remanga.org/api/titles/chapters{chapterNumber}").Result.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
-                Scraper.Core.Classes.Json json = JsonConvert.DeserializeObject<Scraper.Core.Classes.Json>(responseBody);
+                Classes.General.Json json = JsonConvert.DeserializeObject<Classes.General.Json>(responseBody);
 
                 foreach (var page in json.content.pages)
                 {
@@ -286,8 +311,8 @@ namespace Scraper.Core.Sources
                     }
                 }
 
-                Uploader uploader = new Uploader(server, chapter);
-                uploader.upload();
+                RemangaUploader uploader = new RemangaUploader(server);
+                uploader.upload(chapter);
 
                 chapter.images = new List<IImage> { };
             }

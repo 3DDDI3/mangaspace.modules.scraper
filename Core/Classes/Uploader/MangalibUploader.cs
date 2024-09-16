@@ -1,25 +1,27 @@
-﻿using FluentFTP;
+﻿using Scraper.Core.Classes.General;
 using Scraper.Core.Interfaces;
 using SixLabors.ImageSharp.Formats.Webp;
-using System.Net;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Scraper.Core.Classes
+namespace Scraper.Core.Classes.Uploader
 {
-    public class Uploader : IUploader
+    public class MangalibUploader : IUploader
     {
         public SixLabors.ImageSharp.Image image { get; set; }
         public Stream incomingStream { get; set; }
         public MemoryStream outgoingStream { get; set; }
-        public IServer server { get; set; }
-        private IChapter chapter { get; set; }
+        private IServer server { get; set; }
 
-        public Uploader(IServer ftpClient, IChapter chapter)
+        public MangalibUploader(IServer ftpClient)
         {
-            this.server = ftpClient;
-            this.server.connect();
-            this.chapter = chapter;
+            server = ftpClient;
+            server.connect();
         }
-        public void upload()
+        public void upload(IChapter chapter)
         {
             if (!server.client.DirectoryExists($"{server.rootPath}{chapter.volume}"))
             {
@@ -30,11 +32,11 @@ namespace Scraper.Core.Classes
 
             if (!server.client.DirectoryExists($"{server.rootPath}{chapter.number}"))
             {
-                server.client.CreateDirectory($"{server.rootPath}{chapter.number}"); 
+                server.client.CreateDirectory($"{server.rootPath}{chapter.number}");
                 server.rootPath += $"{chapter.number}/";
             }
             else server.rootPath += $"{chapter.number}/";
-            
+
 
             for (int i = 0; i < chapter.images.Count; i++)
             {
@@ -58,7 +60,7 @@ namespace Scraper.Core.Classes
                         Console.WriteLine($"Ошибка: {ex.Message}");
                     }
                 }
-            } 
+            }
         }
     }
 }

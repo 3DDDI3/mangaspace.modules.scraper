@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scraper.Core.Classes
+namespace Scraper.Core.Classes.General
 {
     public class Json
     {
         public Content content { get; set; }
     }
 
-    public class Content { 
+    public class Content
+    {
         public Pages[][] pages { get; set; }
     }
 

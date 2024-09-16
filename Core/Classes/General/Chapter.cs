@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scraper.Core.Classes
+namespace Scraper.Core.Classes.General
 {
     public class Chapter : IChapter
     {
-        public string name {  get; set; }
+        public string name { get; set; }
         public string volume { get; set; }
         public string number { get; set; }
         public string url { get; set; }

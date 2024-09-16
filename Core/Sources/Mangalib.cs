@@ -8,16 +8,31 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Scraper.Core.Json.Mangalib;
 using System;
-using Chapter = Scraper.Core.Classes.Chapter;
-using Page = Scraper.Core.Classes.Page;
+using Chapter = Scraper.Core.Classes.General.Chapter;
+using Page = Scraper.Core.Classes.General.Page;
+using Scraper.Core.Classes.General;
+using Scraper.Core.Classes.Uploader;
 
 namespace Scraper.Core.Sources
 {
-    public class Mangalib : Scraper.Core.Classes.Scraper
+    public class Mangalib : IScraper
     {
         private IServer server;
-        public Mangalib(Configuration conf, EdgeOptions? options = null) : base(conf, options)
+        public string baseUrl { get; set; }
+        public EdgeDriver driver { get; set; }
+        public IPage page { get; set; }
+        public ITitle title { get; set; }
+
+        public Mangalib(Configuration conf, EdgeOptions? options = null)
         {
+            title = new Title()
+            {
+                persons = new List<IPerson>(),
+                contacts = new List<string>(),
+                genres = new List<string>(),
+                chapters = new List<IChapter>()
+            };
+
             page = new Page() { baseUrl = conf.scraperConfiguration.baseUrl, catalogUrl = conf.scraperConfiguration.catalogUrl, pageUrl = conf.scraperConfiguration.pages };
             server = new Server()
             {
@@ -26,13 +41,23 @@ namespace Scraper.Core.Sources
                 password = conf.serverConfiguration.password,
                 rootPath = conf.serverConfiguration.rootPath
             };
+
+            stardDriver(new EdgeOptions() { 
+                PageLoadStrategy = PageLoadStrategy.Eager });
         }
-        public override void getPages()
+
+        private void stardDriver(EdgeOptions edgeOptions = null)
+        {
+            edgeOptions = edgeOptions ?? new EdgeOptions();
+            driver = new EdgeDriver(edgeOptions);
+        }
+
+        public void getPages()
         {
             driver.Navigate().GoToUrl($"{page.baseUrl}{page.catalogUrl}");
         }
 
-        public override void parse()
+        public void parse()
         {
             getPages();
 
@@ -55,7 +80,7 @@ namespace Scraper.Core.Sources
             }
         }
 
-        public override void getTitleInfo()
+        public void getTitleInfo()
         {
             foreach (var block in driver.FindElements(By.XPath("//a[@class='media-info-list__item'] | //div[@class='media-info-list__item'] | //div[@class='media-info-list__item media-info-list__item_alt-names is-expanded']")))
             {
@@ -147,7 +172,7 @@ namespace Scraper.Core.Sources
             }
         }
 
-        public override void getPersons()
+        public void getPersons()
         {
             foreach (var block in driver.FindElements(By.XPath("//a[@class='media-info-list__item'] | //div[@class='media-info-list__item'] | //div[@class='media-info-list__item media-info-list__item_alt-names is-expanded']")))
             {
@@ -206,13 +231,13 @@ namespace Scraper.Core.Sources
                 );
         }
 
-        public override void getChapters()
+        public void getChapters()
         {
             var url = Regex.Replace(driver.Url, @"(\?[a-zA-z\-\=""]+)$", "");
 
             driver.Close();
 
-            this.driverStart(new EdgeOptions() { PageLoadStrategy = PageLoadStrategy.Eager });
+            stardDriver(new EdgeOptions() { PageLoadStrategy = PageLoadStrategy.Eager });
 
             driver.Navigate().GoToUrl($"{url}?section=chapters");
 
@@ -239,15 +264,17 @@ namespace Scraper.Core.Sources
         /// <summary>
         /// TODO Реализовать скачивание изображений
         /// </summary>
-        public override void getImages()
+        public void getImages()
         {
             var url = Regex.Replace(driver.Url, @"(\?[a-zA-z\-\=""]+)$", "");
+
+            MangalibUploader uploader = new MangalibUploader(server);
 
             foreach (var chapter in title.chapters)
             {
                 driver.Close();
 
-                this.driverStart(new EdgeOptions() { PageLoadStrategy = PageLoadStrategy.Eager });
+                stardDriver(new EdgeOptions() { PageLoadStrategy = PageLoadStrategy.Eager });
 
                 driver.Navigate().GoToUrl(chapter.url);
 
@@ -258,9 +285,12 @@ namespace Scraper.Core.Sources
                 {
                     chapter.images.Add(new Image($"https://img33.imgslib.link//manga/{Regex.Matches(url, @"http(?:s)?:\/{2}mangalib.me\/([a-zA-Z-]+)")[0].Groups[1].Value}/chapters/{Regex.Matches(chapter.url, @"&id=(\d+)")[0].Groups[1].Value}/{page.u}"));
                 }
+
+                uploader.upload(chapter);
+                chapter.images = new List<IImage>();
             }
-            
-            
+
+
 
         }
     }

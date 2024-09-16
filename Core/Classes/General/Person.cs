@@ -1,7 +1,7 @@
 ﻿using Scraper.Core.Enums;
 using Scraper.Core.Interfaces;
 
-namespace Scraper.Core.Classes
+namespace Scraper.Core.Classes.General
 {
     public class Person : IPerson
     {
