@@ -25,5 +25,6 @@ namespace Scraper.Core.Classes.General
         public List<string> contacts { get; set; }
         public List<IPerson> persons { get; set; }
         public List<IChapter> chapters { get; set; }
+        public string country { get; set; }
     }
 }

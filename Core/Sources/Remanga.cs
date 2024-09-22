@@ -73,17 +73,25 @@ namespace Scraper.Core.Sources
                 {
                     driver.Navigate().GoToUrl(_title);
                     getTitleInfo();
-                    getPersons();
                     getChapters();
+                    getPersons();
                     getImages();
                     break;
                 }
-                break;
+                if(i==2) break;
             }
         }
 
         public void getTitleInfo()
         {
+            title = new Title()
+            {
+                persons = new List<IPerson>(),
+                contacts = new List<string>(),
+                genres = new List<string>(),
+                chapters = new List<IChapter>()
+            };
+
             if (driver.FindElements(By.XPath("//div[@class='flex p-4']/button[@class='Button_button___CisL Button_button___CisL Button_contained__8_KFk Button_contained-primary__IViyX Button_fullWidth__Dgoqh']")).Count > 0)
                 driver.FindElement(By.XPath("//div[@class='flex p-4']/button[@class='Button_button___CisL Button_button___CisL Button_contained__8_KFk Button_contained-primary__IViyX Button_fullWidth__Dgoqh']")).Click();
 
@@ -149,7 +157,7 @@ namespace Scraper.Core.Sources
                             case "Закончен":
                                 title.translateStatus = TranslateStatus.finished;
                                 break;
-
+                                
                             case "Заморожен":
                                 title.translateStatus = TranslateStatus.frezed;
                                 break;
@@ -190,6 +198,7 @@ namespace Scraper.Core.Sources
 
         public void getPersons()
         {
+            driver.Navigate().GoToUrl($"{Regex.Replace(driver.Url, @"\?p=chapters$", "")}?p=about");
             foreach (var item in driver.FindElements(By.XPath("//div[@class='flex flex-row gap-4 overflow-x-auto flex-nowrap md:flex-wrap']"))[0].FindElements(By.XPath(".//a")))
             {
                 switch (item.FindElement(By.XPath(".//p[@class='Typography_caption___iNir Typography_color-textSecondary__iFFB7 Typography_lineClamp-1__ijYgf Typography_lineClamp__Pa1wi']")).Text)
@@ -260,7 +269,7 @@ namespace Scraper.Core.Sources
         }
         public void getChapters()
         {
-            driver.Navigate().GoToUrl($"{page.baseUrl}{page.catalogUrl}/omniscient-reader?p=chapters");
+            driver.Navigate().GoToUrl($"{driver.Url}?p=chapters");
             var chapterCount = int.Parse(driver.FindElement(By.XPath("//div[@class='flex flex-col items-start'][1]/p[2]")).Text);
 
             while (chapterCount != driver.FindElements(By.XPath("//div[@class='Chapters_container__5S4y_'][1]/a")).Count)
@@ -286,8 +295,7 @@ namespace Scraper.Core.Sources
                         type = PersonType.translator
                     }
                 });
-                i++;
-                if (i==2) break;
+                break;
             }
         }
 

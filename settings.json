@@ -10,6 +10,16 @@
     "catalogUrl": "manga-list",
     "pages": "?page="
   },
+  "mangaovh": {
+    "baseUrl": "https://manga.ovh/",
+    "catalogUrl": "content",
+    "pages": ""
+  },
+  "mangaclub": {
+    "baseUrl": "https://mangaclub.ru/",
+    "catalogUrl": "mangas",
+    "pages": "page/"
+  },
   "server": {
     "url": "5.188.44.210",
     "username": "admin",

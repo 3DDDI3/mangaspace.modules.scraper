@@ -1,6 +1,9 @@
 ﻿using Scraper.Core.Classes.General;
 using Scraper.Core.Interfaces;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Formats.Webp;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,18 +45,30 @@ namespace Scraper.Core.Classes.Uploader
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-                    httpClient.DefaultRequestHeaders.Add("Referer", "https://remanga.org/"); // Пример добавления токена 
                     try
                     {
                         incomingStream = httpClient.GetStreamAsync($"{chapter.images[i].path}.{chapter.images[i].extension}").Result;
                         image = SixLabors.ImageSharp.Image.Load(incomingStream);
 
-                        outgoingStream = new MemoryStream();
-                        image.Save(outgoingStream, new WebpEncoder());
-                        server.client.UploadStream(outgoingStream, $"{server.rootPath}{i + 1}.webp");
+                        var limiter = Math.Ceiling(Convert.ToDouble(image.Height) / 15000);
 
-                        Console.WriteLine("Изображение успешно загружено на FTP-сервер.");
+                        List<SixLabors.ImageSharp.Image> images = new List<SixLabors.ImageSharp.Image>();
+                        if (image.Height > 15000)
+                        {
+                            for (int l = 0; l < limiter; l++)
+                            {
+                                if (l == limiter - 1) images.Add(image.Clone(ctx => ctx.Crop(new Rectangle(0, 15000 * l, image.Width, image.Height - 15000 * l))));
+                                else images.Add(image.Clone(ctx => ctx.Crop(new Rectangle(0, 15000 * l, image.Width, 15000))));
+                            }
+                        }
+
+                        for (int j = 0; j < images.Count; j++)
+                        {
+                            outgoingStream = new MemoryStream();
+                            images[j].SaveAsWebp(outgoingStream, new WebpEncoder());
+                            server.client.UploadStream(outgoingStream, $"{server.rootPath}{i + 1}_{j+1}.webp");
+                        }
+
                     }
                     catch (Exception ex)
                     {

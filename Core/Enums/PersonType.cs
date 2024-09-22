@@ -18,5 +18,9 @@
         /// Издательство
         /// </summary>
         publishing = 4,
+        /// <summary>
+        /// Журнал
+        /// </summary>
+        magazine=5,
     }
 }

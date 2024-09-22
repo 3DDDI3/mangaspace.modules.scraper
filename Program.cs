@@ -53,26 +53,39 @@ public class RabbitMqListener : BackgroundService
         _logger = logger;
 
         Configuration? conf = configuration.Get<Configuration>();
-        conf.scraperConfiguration = configuration.GetSection("remanga").Get<ScraperConfiguration>();
+
         conf.serverConfiguration = configuration.GetSection("server").Get<ServerConfiguration>();
+        conf.scraperConfiguration = configuration.GetSection("mangaclub").Get<ScraperConfiguration>();
+
+        MangaClub mangaClub=new MangaClub(conf);
+        mangaClub.parse();  
+
+        //conf.scraperConfiguration = configuration.GetSection("mangaovh").Get<ScraperConfiguration>();
+
+        //Mangaovh mangaovh = new Mangaovh(conf);
+        //mangaovh.parse();
+
+        //conf.scraperConfiguration = configuration.GetSection("remanga").Get<ScraperConfiguration>();
 
         //Remanga remanga = new Remanga(conf);
         //remanga.parse();
 
-        conf.scraperConfiguration = configuration.GetSection("mangalib").Get<ScraperConfiguration>();
-        EdgeOptions options = new EdgeOptions()
-        {
-            Proxy = new Proxy()
-            {
-                Kind = ProxyKind.Manual,
-                IsAutoDetect = false,   
-                HttpProxy = "proxy.example.com:8080",
-            },
-            PageLoadStrategy = PageLoadStrategy.Eager,
-        };
 
-        Mangalib mangalib = new Mangalib(conf, options);
-        mangalib.parse();
+
+        //conf.scraperConfiguration = configuration.GetSection("mangalib").Get<ScraperConfiguration>();
+        //EdgeOptions options = new EdgeOptions()
+        //{
+        //    Proxy = new Proxy()
+        //    {
+        //        Kind = ProxyKind.Manual,
+        //        IsAutoDetect = false,   
+        //        HttpProxy = "proxy.example.com:8080",
+        //    },
+        //    PageLoadStrategy = PageLoadStrategy.Eager,
+        //};
+
+        //Mangalib mangalib = new Mangalib(conf, options);
+        //mangalib.parse();
 
 
         //var factory = new ConnectionFactory() { HostName = "localhost" };

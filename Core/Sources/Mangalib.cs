@@ -170,6 +170,13 @@ namespace Scraper.Core.Sources
                 title.genres = driver.FindElements(By.XPath("//div[@class='media-tags']/a")).Select(x => x.GetAttribute("href")).ToList();
 
             }
+
+            server.rootPath = $"{server.rootPath}{title.altName}/";
+            server.connect();
+
+            if (!server.client.DirectoryExists(server.rootPath))
+                server.client.CreateDirectory(server.rootPath);
+
         }
 
         public void getPersons()
@@ -289,9 +296,6 @@ namespace Scraper.Core.Sources
                 uploader.upload(chapter);
                 chapter.images = new List<IImage>();
             }
-
-
-
         }
     }
 }

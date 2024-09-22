@@ -30,5 +30,6 @@ namespace Scraper.Core.Interfaces
         public List<string> contacts { get; set; }
         public List<string> genres { get; set; }
         public List<IPerson> persons { get; set; }
+        public string country { get; set; }
     }
 }
