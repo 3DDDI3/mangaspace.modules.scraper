@@ -1,7 +1,10 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Support.UI;
 using Scraper.Core.Classes.General;
+using Scraper.Core.Enums;
 using Scraper.Core.Interfaces;
+using System.Text.RegularExpressions;
 using Class = Scraper.Core.Classes.General;
 
 namespace Scraper.Core.Sources
@@ -52,11 +55,32 @@ namespace Scraper.Core.Sources
 
         public void getChapters()
         {
-            
+            driver.FindElements(By.XPath("//div[@class='chapter-item']")).ToList().ForEach(x => title.chapters.Add(
+                new Chapter()
+                {
+                    url = x.FindElement(By.XPath("./div[1]/a")).GetAttribute("href"),
+                    volume = Regex.Matches(x.FindElement(By.XPath("./div[1]/a")).Text, @"(?:Том\s*(\d+))|(?:Глава\s*(\d+))")[0].Groups[1].Value,
+                    number = Regex.Matches(x.FindElement(By.XPath("./div[1]/a")).Text, @"(?:Том\s*(\d+))|(?:Глава\s*(\d+))")[1].Groups[2].Value
+                }));
+            driver.Close();
         }
 
         public void getImages()
         {
+            stardDriver(new EdgeOptions() { PageLoadStrategy = PageLoadStrategy.Eager });
+            foreach (var chapter in title.chapters)
+            {
+                driver.Navigate().GoToUrl(chapter.url);
+                driver.FindElements(By.XPath("//div[@class='vertical container']/img")).ToList().ForEach(
+                    x => chapter.images.Add(
+                        new Image(x.GetAttribute("src"))
+                    )
+                );
+                break;
+
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                wait.Until()
+            }
         }
 
         public void getPages()
@@ -75,6 +99,61 @@ namespace Scraper.Core.Sources
 
         public void getTitleInfo()
         {
+            title.name = driver.FindElement(By.XPath("//div[@class='content-title']/h2")).Text;
+
+            foreach (var block in driver.FindElements(By.XPath("//div[@class='info']/div/span")))
+            {
+                switch (block.Text)
+                {
+                    case "Названия":
+                        title.altName = block.FindElement(By.XPath("./parent::div/strong")).Text.Split("/")[0];
+                        break;
+
+                    case "Год печати":
+                        title.releaseYear = ushort.Parse(block.FindElement(By.XPath("./parent::div/a")).Text);
+                        break ;
+
+                    case "Жанр":
+                        title.genres = block.FindElements(By.XPath("./parent::div/div/a")).Select(x => x.Text).ToList();
+                        break ;
+
+                    case "Автор(ы)":
+                        block.FindElements(By.XPath("./parent::div/div/a")).ToList().ForEach(
+                            x => title.persons.Add(
+                                new Person()
+                                {
+                                    type = PersonType.author,
+                                    name = x.Text,
+                                })
+                        );
+                        break ;
+
+                    case "Перевод":
+                        block.FindElements(By.XPath("./parent::div/div/a")).Where(x => x.Text != "ссылка").ToList().ForEach(
+                            x => title.persons.Add(new Person()
+                            {
+                                name = x.Text,
+                                type = PersonType.translator,
+                            })
+                        );
+                        break ;
+
+                    case "Статус перевода":
+                        switch (block.FindElement(By.XPath("./parent::div/a")).Text)
+                        {
+                            case "Завершен":
+                                title.translateStatus = TranslateStatus.finished;
+                                break;
+
+                            case "Продолжается":
+                                title.translateStatus = TranslateStatus.continues;
+                                break;
+                        }
+                        
+                        break ;
+                }
+            }
+            
 
         }
 
@@ -90,6 +169,8 @@ namespace Scraper.Core.Sources
                 {
                     driver.Navigate().GoToUrl(title.GetAttribute("href"));
                     getTitleInfo();
+                    getChapters();
+                    getImages();
                 }
 
                 break;
