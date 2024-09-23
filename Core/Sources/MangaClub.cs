@@ -2,6 +2,7 @@
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Support.UI;
 using Scraper.Core.Classes.General;
+using Scraper.Core.Classes.Uploader;
 using Scraper.Core.Enums;
 using Scraper.Core.Interfaces;
 using System.Text.RegularExpressions;
@@ -70,16 +71,26 @@ namespace Scraper.Core.Sources
             stardDriver(new EdgeOptions() { PageLoadStrategy = PageLoadStrategy.Eager });
             foreach (var chapter in title.chapters)
             {
-                driver.Navigate().GoToUrl(chapter.url);
+
+                driver.Navigate().GoToUrl("https://mangaclub.ru/manga/view/12188-ischezajuschie-ponedelniki/v1-c33.html#1");
+
+                WebDriverWait wait;
+
+                while (driver.FindElements(By.XPath("//div[@class='manga-lines-page']/a")).Count() > driver.FindElements(By.XPath("//div[@class='vertical container']/img")).Count())
+                    new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+
                 driver.FindElements(By.XPath("//div[@class='vertical container']/img")).ToList().ForEach(
                     x => chapter.images.Add(
                         new Image(x.GetAttribute("src"))
                     )
                 );
+
+                MangaClubUploader uploader = new MangaClubUploader(server);
+                uploader.upload(chapter);
+
                 break;
 
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-                wait.Until()
+               
             }
         }
 
