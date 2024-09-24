@@ -11,6 +11,7 @@
     <PackageReference Include="FluentFTP" Version="51.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Polly" Version="8.4.1" />
     <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
     <PackageReference Include="RussianTransliterator" Version="1.0.1.1" />
     <PackageReference Include="Selenium.WebDriver" Version="4.24.0" />
