@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Text;
+using System.Text.Unicode;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,7 +77,13 @@ public class TaskService : BackgroundService
     {
         _logger = logger;
 
-        var factory = new ConnectionFactory() { HostName = "localhost" };
+        var factory = new ConnectionFactory()
+        {
+            UserName = "guest",
+            Password = "guest",
+            Port = 5672,
+            HostName = "127.0.0.1",
+        };
         connection = factory.CreateConnection();
         channel = connection.CreateModel();
 
@@ -96,13 +103,53 @@ public class TaskService : BackgroundService
         var consumer = new EventingBasicConsumer(channel);
         consumer.Received += (model, ea) =>
         {
+            Thread.Sleep(2000);
+
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
             var headers = ea.BasicProperties.Headers;
+
+            var jobId = Encoding.UTF8.GetString((byte[])(headers.Where(x => x.Key == "job_id")
+                            .First()).Value);
+
             Console.WriteLine($"Получено сообщение: {message} с заголовком: {headers}");
+
+            var factory = new ConnectionFactory()
+            {
+                UserName = "guest",
+                Password = "guest",
+                Port = 5672,
+                HostName = "127.0.0.1",
+            };
+
+            IConnection newconnection = factory.CreateConnection();
+            IModel newchannel = connection.CreateModel();
+
+            message = "Hello World!";
+            body = Encoding.UTF8.GetBytes(message);
+
+            headers = new Dictionary<string, object>
+            {
+                { "job_id", jobId },
+            };
+
+            // Создаем свойства сообщения
+            var properties = channel.CreateBasicProperties();
+            properties.Headers = headers; 
+
+            newchannel.BasicPublish(exchange: string.Empty,
+                                 routingKey: "bye",
+                                 basicProperties: properties,
+                                 body: body);
+            Console.WriteLine($" [x] Sent {message}");
+
+            channel.BasicAck(ea.DeliveryTag, false);
+
         };
 
-        channel.BasicConsume(queue: "test", autoAck: false, consumer: consumer);
+        //channel.QueueDeclare(queue: "bye", durable: false, exclusive: false, autoDelete: false, arguments: null);
+
+        channel.BasicConsume(queue: "hello", autoAck: false, consumer: consumer);
 
         //_logger.LogInformation("TaskService is running.");
         //await Task.Delay(1000, stoppingToken);
