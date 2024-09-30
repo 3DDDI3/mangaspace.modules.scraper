@@ -75,6 +75,8 @@ namespace Scraper.Core.Sources
                     getTitleInfo();
                     getChapters();
                     getPersons();
+                    var json= JsonConvert.SerializeObject(title);
+                    break;
                     getImages();
                     break;
                 }
@@ -311,13 +313,36 @@ namespace Scraper.Core.Sources
                 string responseBody = await response.Content.ReadAsStringAsync();
                 Classes.General.Json json = JsonConvert.DeserializeObject<Classes.General.Json>(responseBody);
 
-                foreach (var page in json.content.pages)
+                string jpg = "", jpeg = "", png = "", webp = "";
+
+                for (int i=0; i< json.content.pages.Length; i++)
                 {
-                    foreach (var image in page)
+                    var page = json.content.pages[i];
+                    for (int j=0; j< page.Length; j++)
                     {
-                        chapter.images.Add(new Image(image.link));
+                        chapter.images.Add(new Image(page[j].link));
+                        
+                        switch (Regex.Matches(page[j].link, @".(\w+)$")[0].Groups[1].Value)
+                        {
+                            case "webp":
+                                webp += $"{i + 1}.{j + 1},";
+                                break;
+                            case "jpg":
+                                jpg += $"{i + 1}.{j + 1},";
+                                break;
+                            case "jpeg":
+                                jpeg += $"{i + 1}.{j + 1},";
+                                break;
+                            case "png":
+                                png += $"{i + 1}.{j + 1},";
+                                break;
+                        }
                     }
                 }
+
+                webp = webp.Substring(0, webp.LastIndexOf(","));
+
+                chapter.extensions = $"{jpeg}|{jpg}|{webp}|{png}";
 
                 RemangaUploader uploader = new RemangaUploader(server);
                 uploader.upload(chapter);

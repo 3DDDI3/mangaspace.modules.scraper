@@ -4,11 +4,14 @@ using System.Text;
 using System.Text.Unicode;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Scraper.Core.Classes.General;
+using Scraper.Core.Sources;
 
 public class InternetCheckService : IHostedService, IDisposable
 {
@@ -72,10 +75,12 @@ public class TaskService : BackgroundService
     private readonly ILogger<TaskService> _logger;
     private readonly IConnection connection;
     private readonly IModel channel;
+    private readonly IConfiguration _conf;
 
-    public TaskService(ILogger<TaskService> logger)
+    public TaskService(ILogger<TaskService> logger, IConfiguration conf)
     {
         _logger = logger;
+        _conf = conf;
 
         var factory = new ConnectionFactory()
         {
@@ -100,56 +105,65 @@ public class TaskService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var consumer = new EventingBasicConsumer(channel);
-        consumer.Received += (model, ea) =>
-        {
-            Thread.Sleep(2000);
+        Configuration? conf = _conf.Get<Configuration>();
 
-            var body = ea.Body.ToArray();
-            var message = Encoding.UTF8.GetString(body);
-            var headers = ea.BasicProperties.Headers;
+        conf.serverConfiguration = _conf.GetSection("server").Get<ServerConfiguration>();
+        conf.scraperConfiguration = _conf.GetSection("remanga").Get<ScraperConfiguration>();
 
-            var jobId = Encoding.UTF8.GetString((byte[])(headers.Where(x => x.Key == "job_id")
-                            .First()).Value);
+        Remanga remanga = new Remanga(conf);
+        remanga.parse();
 
-            Console.WriteLine($"Получено сообщение: {message} с заголовком: {headers}");
+        //var consumer = new EventingBasicConsumer(channel);
+        //consumer.Received += (model, ea) =>
+        //{
+        //    var body = ea.Body.ToArray();
+        //    var message = Encoding.UTF8.GetString(body);
+        //    var headers = ea.BasicProperties.Headers;
 
-            var factory = new ConnectionFactory()
-            {
-                UserName = "guest",
-                Password = "guest",
-                Port = 5672,
-                HostName = "127.0.0.1",
-            };
+        //    var jobId = Encoding.UTF8.GetString((byte[])(headers.Where(x => x.Key == "job_id")
+        //                    .First()).Value);
 
-            IConnection newconnection = factory.CreateConnection();
-            IModel newchannel = connection.CreateModel();
+        //    Console.WriteLine($"Получено сообщение: {message} с заголовком: {headers}");
 
-            message = "Hello World!";
-            body = Encoding.UTF8.GetBytes(message);
+        //    var factory = new ConnectionFactory()
+        //    {
+        //        UserName = "guest",
+        //        Password = "guest",
+        //        Port = 5672,
+        //        HostName = "127.0.0.1",
+        //    };
 
-            headers = new Dictionary<string, object>
-            {
-                { "job_id", jobId },
-            };
+        //    IConnection newconnection = factory.CreateConnection();
+        //    IModel newchannel = connection.CreateModel();
 
-            // Создаем свойства сообщения
-            var properties = channel.CreateBasicProperties();
-            properties.Headers = headers; 
+        //    message = "Hello World!";
+        //    body = Encoding.UTF8.GetBytes(message);
 
-            newchannel.BasicPublish(exchange: string.Empty,
-                                 routingKey: "bye",
-                                 basicProperties: properties,
-                                 body: body);
-            Console.WriteLine($" [x] Sent {message}");
+        //    headers = new Dictionary<string, object>
+        //    {
+        //        { "job_id", jobId },
+        //    };
 
-            channel.BasicAck(ea.DeliveryTag, false);
+        //    // Создаем свойства сообщения
+        //    var properties = channel.CreateBasicProperties();
+        //    properties.Headers = headers; 
 
-        };
+        //    newchannel.BasicPublish(exchange: string.Empty,
+        //                         routingKey: "bye",
+        //                         basicProperties: properties,
+        //                         body: body);
+        //    Console.WriteLine($" [x] Sent {message}");
+
+        //    channel.BasicAck(ea.DeliveryTag, false);
+
+        //    newchannel.Close();
+        //    newconnection.Close();
+
+        //};
 
         //channel.QueueDeclare(queue: "bye", durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-        channel.BasicConsume(queue: "hello", autoAck: false, consumer: consumer);
+        //channel.BasicConsume(queue: "hello", autoAck: false, consumer: consumer);
 
         //_logger.LogInformation("TaskService is running.");
         //await Task.Delay(1000, stoppingToken);
@@ -166,11 +180,24 @@ public class Program
 {
     public static Task Main(string[] args) =>
         Host.CreateDefaultBuilder(args)
+             .ConfigureLogging(logging =>
+             {
+                 logging.ClearProviders();
+                 logging.AddConsole();
+             })
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton<TaskService>(); // Изменено на Singleton
                 services.AddHostedService<InternetCheckService>();
                 services.AddHostedService<TaskService>(); // Теперь используется тот же экземпляр
+            })
+            .ConfigureAppConfiguration(x =>
+            {
+                var configuration = new ConfigurationBuilder()
+                    //.SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("settings.json", false, true)
+                    .Build();
+                x.AddConfiguration(configuration);
             })
             .Build()
             .RunAsync();
