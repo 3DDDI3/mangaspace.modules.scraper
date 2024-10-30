@@ -75,12 +75,11 @@ namespace Scraper.Core.Sources
                     getTitleInfo();
                     getChapters();
                     getPersons();
-                    var json= JsonConvert.SerializeObject(title);
                     break;
                     getImages();
                     break;
                 }
-                if(i==2) break;
+                break;
             }
         }
 

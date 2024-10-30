@@ -8,9 +8,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Scraper.Core.Classes.General;
+using Scraper.Core.Classes.MessageReader;
 using Scraper.Core.Sources;
 
 public class InternetCheckService : IHostedService, IDisposable
@@ -110,60 +112,69 @@ public class TaskService : BackgroundService
         conf.serverConfiguration = _conf.GetSection("server").Get<ServerConfiguration>();
         conf.scraperConfiguration = _conf.GetSection("remanga").Get<ScraperConfiguration>();
 
-        Remanga remanga = new Remanga(conf);
-        remanga.parse();
+        //Remanga remanga = new Remanga(conf);
+        //remanga.parse();
 
-        //var consumer = new EventingBasicConsumer(channel);
-        //consumer.Received += (model, ea) =>
-        //{
-        //    var body = ea.Body.ToArray();
-        //    var message = Encoding.UTF8.GetString(body);
-        //    var headers = ea.BasicProperties.Headers;
+        //string message = JsonConvert.SerializeObject(remanga.title);
+        //var body = Encoding.UTF8.GetBytes("test");
 
-        //    var jobId = Encoding.UTF8.GetString((byte[])(headers.Where(x => x.Key == "job_id")
-        //                    .First()).Value);
+        //channel.BasicPublish(exchange: string.Empty,
+        //                     routingKey: "test",
+        //                     basicProperties: null,
+        //                     body: body);
 
-        //    Console.WriteLine($"Получено сообщение: {message} с заголовком: {headers}");
 
-        //    var factory = new ConnectionFactory()
-        //    {
-        //        UserName = "guest",
-        //        Password = "guest",
-        //        Port = 5672,
-        //        HostName = "127.0.0.1",
-        //    };
+        var consumer = new EventingBasicConsumer(channel);
+        consumer.Received += (model, ea) =>
+        {
+            var body = ea.Body.ToArray();
+            var message = Encoding.UTF8.GetString(body);
+            var headers = ea.BasicProperties.Headers;
 
-        //    IConnection newconnection = factory.CreateConnection();
-        //    IModel newchannel = connection.CreateModel();
+            //var jobId = Encoding.UTF8.GetString((byte[])(headers.Where(x => x.Key == "job_id")
+            //                .First()).Value);
 
-        //    message = "Hello World!";
-        //    body = Encoding.UTF8.GetBytes(message);
+            Console.WriteLine($"Получено сообщение: {message} с заголовком: {headers}");
 
-        //    headers = new Dictionary<string, object>
-        //    {
-        //        { "job_id", jobId },
-        //    };
+            var factory = new ConnectionFactory()
+            {
+                UserName = "guest",
+                Password = "guest",
+                Port = 5672,
+                HostName = "127.0.0.1",
+            };
 
-        //    // Создаем свойства сообщения
-        //    var properties = channel.CreateBasicProperties();
-        //    properties.Headers = headers; 
+            IConnection newconnection = factory.CreateConnection();
+            IModel newchannel = connection.CreateModel();
 
-        //    newchannel.BasicPublish(exchange: string.Empty,
-        //                         routingKey: "bye",
-        //                         basicProperties: properties,
-        //                         body: body);
-        //    Console.WriteLine($" [x] Sent {message}");
+            //message = "Hello World!";
+            //body = Encoding.UTF8.GetBytes(message);
 
-        //    channel.BasicAck(ea.DeliveryTag, false);
+            //headers = new Dictionary<string, object>
+            //{
+            //    { "job_id", jobId },
+            //};
 
-        //    newchannel.Close();
-        //    newconnection.Close();
+            //// Создаем свойства сообщения
+            //var properties = channel.CreateBasicProperties();
+            //properties.Headers = headers;
 
-        //};
+            //newchannel.BasicPublish(exchange: string.Empty,
+            //                     routingKey: "bye",
+            //                     basicProperties: properties,
+            //                     body: body);
+            //Console.WriteLine($" [x] Sent {message}");
+
+            channel.BasicAck(ea.DeliveryTag, false);
+
+            newchannel.Close();
+            newconnection.Close();
+
+        };
 
         //channel.QueueDeclare(queue: "bye", durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-        //channel.BasicConsume(queue: "hello", autoAck: false, consumer: consumer);
+        channel.BasicConsume(queue: "request", autoAck: false, consumer: consumer);
 
         //_logger.LogInformation("TaskService is running.");
         //await Task.Delay(1000, stoppingToken);
