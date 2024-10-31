@@ -13,6 +13,7 @@ using ImageSharp = SixLabors.ImageSharp.Image;
 using Scraper.Core.Classes.Uploader;
 using Scraper.Core.Classes.General;
 using OpenQA.Selenium.Edge;
+using Scraper.Core.DTO;
 
 namespace Scraper.Core.Sources
 {
@@ -24,7 +25,7 @@ namespace Scraper.Core.Sources
         public IPage page { get; set; }
         public ITitle title { get; set; }
 
-        public Remanga(Configuration conf)
+        public Remanga(Configuration conf, string message)
         {
             title = new Title()
             {
@@ -33,6 +34,7 @@ namespace Scraper.Core.Sources
                 genres = new List<string>(),
                 chapters = new List<IChapter>()
             };
+            var msg = JsonConvert.DeserializeObject<RequestDTO>(message);
             page = new Page() { baseUrl = conf.scraperConfiguration.baseUrl, catalogUrl = conf.scraperConfiguration.catalogUrl, pageUrl = conf.scraperConfiguration.pages };
             server = new Server()
             {

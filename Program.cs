@@ -107,14 +107,6 @@ public class TaskService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Configuration? conf = _conf.Get<Configuration>();
-
-        conf.serverConfiguration = _conf.GetSection("server").Get<ServerConfiguration>();
-        conf.scraperConfiguration = _conf.GetSection("remanga").Get<ScraperConfiguration>();
-
-        //Remanga remanga = new Remanga(conf);
-        //remanga.parse();
-
         //string message = JsonConvert.SerializeObject(remanga.title);
         //var body = Encoding.UTF8.GetBytes("test");
 
@@ -133,6 +125,15 @@ public class TaskService : BackgroundService
 
             //var jobId = Encoding.UTF8.GetString((byte[])(headers.Where(x => x.Key == "job_id")
             //                .First()).Value);
+
+            Configuration? conf = _conf.Get<Configuration>();
+
+            conf.serverConfiguration = _conf.GetSection("server").Get<ServerConfiguration>();
+            conf.scraperConfiguration = _conf.GetSection("remanga").Get<ScraperConfiguration>();
+
+            Remanga remanga = new Remanga(conf, message);
+            remanga.parse();
+
 
             Console.WriteLine($"Получено сообщение: {message} с заголовком: {headers}");
 
