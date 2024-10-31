@@ -25,5 +25,11 @@
     "username": "admin",
     "password": "w823eG7a5W3l",
     "rootPath": "/storage/"
+  },
+  "rabbitmq": {
+    "username": "guest",
+    "password": "guest",
+    "port": 5672,
+    "hostname": "127.0.0.1"
   }
 }
