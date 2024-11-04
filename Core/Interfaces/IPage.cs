@@ -11,6 +11,6 @@ namespace Scraper.Core.Interfaces
         public string baseUrl { get; set; }
         public string catalogUrl { get; set; }
         public string pageUrl { get; set; }
-        public IPageRange pageRange { get; set; }
+        public List<int> pages { get; set; }
     }
 }

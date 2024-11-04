@@ -13,9 +13,6 @@ namespace Scraper.Core.Classes.General
         public string? catalogUrl { get; set; }
         public string? pageUrl { get; set; }
         public IPageRange pageRange { get; set; }
-        public Page()
-        {
-            pageRange = new PageRange();
-        }
+        public List<int> pages { get; set; }
     }
 }

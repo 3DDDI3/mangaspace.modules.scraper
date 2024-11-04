@@ -12,17 +12,7 @@ namespace Scraper.Core.Classes.General
         public string baseUrl { get; set; }
         public string catalogUrl { get; set; }
         public string pageUrl { get; set; }
-        public List<string> pages { get; set; }
-        public IPageRange pageRange { get; set; }
-
-        public RemangaPage()
-        {
-            pageRange = new PageRange();
-            pages = new List<string>();
-        }
-        public void getPages()
-        {
-            pages.Add("asd");
-        }
+        public List<int> pages { get; set; }
+        public RemangaPage() => pages = new List<int>();
     }
 }

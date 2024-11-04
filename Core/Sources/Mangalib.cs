@@ -131,7 +131,7 @@ namespace Scraper.Core.Sources
                                 break;
 
                             case "Заморожен":
-                                title.translateStatus = TranslateStatus.frezed;
+                                title.translateStatus = TranslateStatus.freezed;
                                 break;
 
                             case "Заброшен":

@@ -11,14 +11,14 @@ namespace Scraper.Core.Enums
         /// <summary>
         /// 0+
         /// </summary>
-        all=0,
+        all = 1,
         /// <summary>
         /// 16+
         /// </summary>
-        minor=16,
+        minor = 2,
         /// <summary>
         /// 18+
         /// </summary>
-        adult=18
+        adult = 3
     }
 }

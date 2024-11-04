@@ -7,13 +7,14 @@ using Scraper.Core.Enums;
 using Scraper.Core.Interfaces;
 using SixLabors.ImageSharp.Formats.Webp;
 using System.Net;
-using Scraper.Core.Classes;
 using System.Text.RegularExpressions;
 using ImageSharp = SixLabors.ImageSharp.Image;
 using Scraper.Core.Classes.Uploader;
 using Scraper.Core.Classes.General;
 using OpenQA.Selenium.Edge;
 using Scraper.Core.DTO;
+using Microsoft.Extensions.Logging;
+using Scraper.Core.Classes.RabbitMQ;
 
 namespace Scraper.Core.Sources
 {
@@ -25,8 +26,12 @@ namespace Scraper.Core.Sources
         public IPage page { get; set; }
         public ITitle title { get; set; }
 
-        public Remanga(Configuration conf, string message)
+        private ILogger logger;
+
+        public Remanga(Configuration conf, RMQ rmq, ILogger logger)
         {
+            this.logger = logger;
+
             title = new Title()
             {
                 persons = new List<IPerson>(),
@@ -34,8 +39,17 @@ namespace Scraper.Core.Sources
                 genres = new List<string>(),
                 chapters = new List<IChapter>()
             };
-            var msg = JsonConvert.DeserializeObject<RequestDTO>(message);
-            page = new Page() { baseUrl = conf.scraperConfiguration.baseUrl, catalogUrl = conf.scraperConfiguration.catalogUrl, pageUrl = conf.scraperConfiguration.pages };
+
+            RequestDTO requestDTO = JsonConvert.DeserializeObject<RequestDTO>(rmq.rmqMessage.message);
+
+            page = new Page()
+            {
+                baseUrl = conf.scraperConfiguration.baseUrl,
+                catalogUrl = conf.scraperConfiguration.catalogUrl,
+                pageUrl = conf.scraperConfiguration.pages,
+                pages = requestDTO.pages.Split(",").Select(x => int.Parse(x)).ToList()
+            };
+
             server = new Server()
             {
                 url = conf.serverConfiguration.url,
@@ -43,34 +57,42 @@ namespace Scraper.Core.Sources
                 password = conf.serverConfiguration.password,
                 rootPath = conf.serverConfiguration.rootPath
             };
+
             startDriver();
         }
 
         private void startDriver(EdgeOptions edgeOptions = null)
         {
             edgeOptions = edgeOptions ?? new EdgeOptions();
+            edgeOptions.AddArgument("--log-level=3");
             driver = new EdgeDriver(edgeOptions);
         }
 
         public void getPages()
         {
+            //if (page.pages.Count > 0)
+            //    return;
+
             driver.Navigate().GoToUrl($"{page.baseUrl}{page.catalogUrl}");
             driver.FindElement(By.XPath("//input[@class='SwitchBase_input__9Z5ZO Switch_input__bHF07']")).Click();
-            page.pageRange = new PageRange()
+
+            for (int i = 0; i < int.Parse(driver.FindElement(By.XPath("//button[@class='Button_button___CisL Button_button___CisL Button_text__IGNQ6 Button_text-primary__WgBRV hidden-xs'][2]")).Text); i++)
             {
-                from = 1,
-                to = int.Parse(driver.FindElement(By.XPath("//div[@class='Pagination_pagination__bJbKa']/button[contains(@class, 'Button_button___CisL Button_button___CisL Button_text__IGNQ6 Button_text-primary__WgBRV hidden-xs')][last()]")).Text)
-            };           
+                page.pages.Add(i);
+            } 
         }
 
         public void parse()
         {
             getPages();
 
-            for (int i = page.pageRange.from; i <= page.pageRange.to; i++)
+            for (int i = 0; i <= page.pages.Count; i++)
             {
                 driver.Navigate().GoToUrl($"{page.baseUrl}/{page.catalogUrl}{page.pageUrl}{i}");
-                var titles = driver.FindElements(By.XPath("//div[@class='Grid_gridItem__aPUx1 p-1']/a")).Select(x => x.GetAttribute("href")).ToList();
+                var titles = driver.FindElements(By.XPath("//div[@class='Grid_gridItem__aPUx1 p-1']/a"))
+                    .Select(x => x.GetAttribute("href"))
+                    .ToList();
+
                 foreach (var _title in titles)
                 {
                     driver.Navigate().GoToUrl(_title);
@@ -121,6 +143,7 @@ namespace Scraper.Core.Sources
             title.otherNames = driver.FindElement(By.XPath("//div[@class='flex items-end relative']/p[1]")).Text;
             driver.FindElement(By.XPath("//span[@class='Chip_chip__0JxfA Chip_white__lcP51']")).Click();
             title.genres = driver.FindElements(By.XPath("//a[@class='Chip_chip__0JxfA Chip_gray__IEsKT']")).Select(x => x.Text).ToList();
+
             foreach (var item in driver.FindElements(By.XPath("//div[@class='flex flex-col items-start']/p[1]")))
             {
                 switch (item.Text)
@@ -162,7 +185,7 @@ namespace Scraper.Core.Sources
                                 break;
                                 
                             case "Заморожен":
-                                title.translateStatus = TranslateStatus.frezed;
+                                title.translateStatus = TranslateStatus.freezed;
                                 break;
 
                             case "Нет переводчика":
@@ -280,8 +303,6 @@ namespace Scraper.Core.Sources
                 IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
                 js.ExecuteScript("window.scrollTo(0, document.getElementsByTagName(\"body\")[0].scrollHeight)");
             }
-
-            var i = 0;
 
             foreach(var chapter in driver.FindElements(By.XPath("//div[@class='Chapters_container__5S4y_'][1]/a")))
             {

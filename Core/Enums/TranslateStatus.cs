@@ -19,7 +19,7 @@ namespace Scraper.Core.Enums
         /// <summary>
         /// Заморожен
         /// </summary>
-        frezed = 3,
+        freezed = 3,
         /// <summary>
         /// Прекращен
         /// </summary>

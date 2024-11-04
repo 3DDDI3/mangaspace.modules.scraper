@@ -97,11 +97,6 @@ namespace Scraper.Core.Sources
         public void getPages()
         {
             driver.Navigate().GoToUrl($"{page.baseUrl}{page.catalogUrl}");
-            page.pageRange = new PageRange()
-            {
-                from = 1,
-                to = int.Parse(driver.FindElements(By.XPath("//div[@class='pagination-list']/a"))[driver.FindElements(By.XPath("//div[@class='pagination-list']/a")).Count - 2].Text)
-            };
         }
 
         public void getPersons()
@@ -172,7 +167,7 @@ namespace Scraper.Core.Sources
         {
             getPages();
 
-            for (int i = 0; i < page.pageRange.to; i++)
+            for (int i = 0; i < page.pages.Count; i++)
             {
                 driver.Navigate().GoToUrl($"{page.baseUrl}{page.catalogUrl}/{page.pageUrl}{i + 1}");
 
