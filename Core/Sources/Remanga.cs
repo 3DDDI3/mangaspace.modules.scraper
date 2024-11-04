@@ -69,12 +69,16 @@ namespace Scraper.Core.Sources
         }
 
         public void getPages()
-        {
-            //if (page.pages.Count > 0)
-            //    return;
-
+        {                
             driver.Navigate().GoToUrl($"{page.baseUrl}{page.catalogUrl}");
+
+            if (driver.FindElements(By.XPath(("(//div[@class='Dialog_container___8sF_ Dialog_scroll-paper__w_Ugs']//button//span)[2]"))).Count() > 0)
+                driver.FindElement(By.XPath(("(//div[@class='Dialog_container___8sF_ Dialog_scroll-paper__w_Ugs']//button//span)[2]"))).Click();
+
             driver.FindElement(By.XPath("//input[@class='SwitchBase_input__9Z5ZO Switch_input__bHF07']")).Click();
+
+            if (page.pages.Count > 0)
+                return;
 
             for (int i = 0; i < int.Parse(driver.FindElement(By.XPath("//button[@class='Button_button___CisL Button_button___CisL Button_text__IGNQ6 Button_text-primary__WgBRV hidden-xs'][2]")).Text); i++)
             {
@@ -88,7 +92,7 @@ namespace Scraper.Core.Sources
 
             for (int i = 0; i <= page.pages.Count; i++)
             {
-                driver.Navigate().GoToUrl($"{page.baseUrl}/{page.catalogUrl}{page.pageUrl}{i}");
+                driver.Navigate().GoToUrl($"{page.baseUrl}/{page.catalogUrl}{page.pageUrl}{page.pages[i]}");
                 var titles = driver.FindElements(By.XPath("//div[@class='Grid_gridItem__aPUx1 p-1']/a"))
                     .Select(x => x.GetAttribute("href"))
                     .ToList();
@@ -97,8 +101,8 @@ namespace Scraper.Core.Sources
                 {
                     driver.Navigate().GoToUrl(_title);
                     getTitleInfo();
-                    getChapters();
                     getPersons();
+                    getChapters();                   
                     break;
                     getImages();
                     break;
@@ -292,7 +296,13 @@ namespace Scraper.Core.Sources
 
                 }
             }
+
+            var json = JsonConvert.SerializeObject(title);
+
+
+
         }
+
         public void getChapters()
         {
             driver.Navigate().GoToUrl($"{driver.Url}?p=chapters");
