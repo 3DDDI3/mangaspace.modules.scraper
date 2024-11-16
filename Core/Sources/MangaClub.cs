@@ -12,10 +12,11 @@ namespace Scraper.Core.Sources
 {
     public class MangaClub : IScraper
     {
-        private IServer server;
+        private IFTPServer ftpServer;
         public string baseUrl { get; set; }
         public EdgeDriver driver { get; set; }
         public IPage page { get; set; }
+        public Server server { get; set; }
         public ITitle title { get; set; }
 
         public MangaClub(Configuration conf, EdgeOptions? options = null)
@@ -35,7 +36,7 @@ namespace Scraper.Core.Sources
                 pageUrl = conf.scraperConfiguration.pages
             };
 
-            server = new Server()
+            ftpServer = new FTPServer()
             {
                 url = conf.serverConfiguration.url,
                 username = conf.serverConfiguration.username,
@@ -85,7 +86,7 @@ namespace Scraper.Core.Sources
                     )
                 );
 
-                MangaClubUploader uploader = new MangaClubUploader(server);
+                MangaClubUploader uploader = new MangaClubUploader(ftpServer);
                 uploader.upload(chapter);
 
                 break;

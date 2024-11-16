@@ -11,9 +11,9 @@ namespace Scraper.Core.Classes.Uploader
         public Stream incomingStream { get; set; }
         public MemoryStream outgoingStream { get; set; }
 
-        private IServer server { get; set; }
+        private IFTPServer server { get; set; }
 
-        public MangaClubUploader(IServer ftpClient)
+        public MangaClubUploader(IFTPServer ftpClient)
         {
             server = ftpClient;
             server.connect();

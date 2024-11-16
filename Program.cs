@@ -81,6 +81,7 @@ public class TaskService : BackgroundService
         _conf.rabbitMQConfiguration = conf.GetSection("rabbitmq").Get<RabbitMQConfiguration>();
         _conf.serverConfiguration = conf.GetSection("server").Get<ServerConfiguration>();
         _conf.scraperConfiguration = conf.GetSection("remanga").Get<ScraperConfiguration>();
+        _conf.apiConfiguration = conf.GetSection("api").Get<ApiConfiguration>();
         _rmq = new RMQ(_conf);
     }
 

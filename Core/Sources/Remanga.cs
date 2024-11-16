@@ -15,22 +15,25 @@ using OpenQA.Selenium.Edge;
 using Scraper.Core.DTO;
 using Microsoft.Extensions.Logging;
 using Scraper.Core.Classes.RabbitMQ;
+using RestSharp;
 
 namespace Scraper.Core.Sources
 {
     public class Remanga:IScraper
     {
-        private IServer server;
+        private IFTPServer ftpServer;
         public string baseUrl { get; set; }
         public EdgeDriver driver { get; set; }
         public IPage page { get; set; }
         public ITitle title { get; set; }
+        public Server server { get; set; }
 
         private ILogger logger;
 
         public Remanga(Configuration conf, RMQ rmq, ILogger logger)
         {
             this.logger = logger;
+            server = new Server(conf);
 
             title = new Title()
             {
@@ -50,7 +53,7 @@ namespace Scraper.Core.Sources
                 pages = requestDTO.pages.Split(",").Select(x => int.Parse(x)).ToList()
             };
 
-            server = new Server()
+            ftpServer = new FTPServer()
             {
                 url = conf.serverConfiguration.url,
                 username = conf.serverConfiguration.username,
@@ -69,7 +72,7 @@ namespace Scraper.Core.Sources
         }
 
         public void getPages()
-        {                
+        {
             driver.Navigate().GoToUrl($"{page.baseUrl}{page.catalogUrl}");
 
             if (driver.FindElements(By.XPath(("(//div[@class='Dialog_container___8sF_ Dialog_scroll-paper__w_Ugs']//button//span)[2]"))).Count() > 0)
@@ -83,7 +86,7 @@ namespace Scraper.Core.Sources
             for (int i = 0; i < int.Parse(driver.FindElement(By.XPath("//button[@class='Button_button___CisL Button_button___CisL Button_text__IGNQ6 Button_text-primary__WgBRV hidden-xs'][2]")).Text); i++)
             {
                 page.pages.Add(i);
-            } 
+            }
         }
 
         public void parse()
@@ -101,10 +104,10 @@ namespace Scraper.Core.Sources
                 {
                     driver.Navigate().GoToUrl(_title);
                     getTitleInfo();
-                    getPersons();
                     getChapters();                   
-                    break;
+                    getPersons();
                     getImages();
+                    break;
                     break;
                 }
                 break;
@@ -126,14 +129,14 @@ namespace Scraper.Core.Sources
 
             title.name = driver.FindElement(By.XPath("//h1[@class='Typography_h3___I3IT']")).Text;
 
-            server.connect();
+            ftpServer.connect();
 
-            if (!server.client.DirectoryExists($"{server.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
-                server.client.CreateDirectory($"{server.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
+            if (!ftpServer.client.DirectoryExists($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
+                ftpServer.client.CreateDirectory($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
                 
-            server.rootPath += $"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}/";
+            ftpServer.rootPath += $"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}/";
 
-            server.disconnect();
+            ftpServer.disconnect();
 
             var arr = driver.FindElement(By.XPath("//div[@class='flex flex-col items-start gap-1']/h5")).Text.Split(" ");
             title.type = arr[0];
@@ -297,9 +300,10 @@ namespace Scraper.Core.Sources
                 }
             }
 
-            var json = JsonConvert.SerializeObject(title);
+            server
 
-
+            server.init("v1.0/titles/persons");
+            var res = server.client.Post(server.request.AddJsonBody(JsonConvert.SerializeObject(title)));
 
         }
 
@@ -329,6 +333,8 @@ namespace Scraper.Core.Sources
                         type = PersonType.translator
                     }
                 });
+                //server.init("v1.0/titles/chapters");
+                //var res = server.client.Post(server.request.AddJsonBody(JsonConvert.SerializeObject(title.chapters)));
                 break;
             }
         }
@@ -376,8 +382,12 @@ namespace Scraper.Core.Sources
 
                 chapter.extensions = $"{jpeg}|{jpg}|{webp}|{png}";
 
-                RemangaUploader uploader = new RemangaUploader(server);
-                uploader.upload(chapter);
+                var _chapter = JsonConvert.SerializeObject(chapter);
+
+             
+
+                //RemangaUploader uploader = new RemangaUploader(server);
+                //uploader.upload(chapter);
 
                 chapter.images = new List<IImage> { };
             }

@@ -12,9 +12,9 @@ namespace Scraper.Core.Classes.Uploader
         public SixLabors.ImageSharp.Image image { get; set; }
         public Stream incomingStream { get; set; }
         public MemoryStream outgoingStream { get; set; }
-        private IServer server { get; set; }
+        private IFTPServer server { get; set; }
 
-        public MangalibUploader(IServer ftpClient)
+        public MangalibUploader(IFTPServer ftpClient)
         {
             server = ftpClient;
             server.connect();

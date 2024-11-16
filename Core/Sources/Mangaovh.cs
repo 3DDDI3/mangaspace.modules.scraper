@@ -16,11 +16,12 @@ namespace Scraper.Core.Sources
 {
     public class Mangaovh:IScraper
     {
-        private IServer server;
+        private IFTPServer ftpServer;
         public string baseUrl { get; set; }
         public EdgeDriver driver { get; set; }
         public IPage page { get; set; }
         public ITitle title { get; set; }
+        public Server server { get; set; }        
 
         public Mangaovh(Configuration conf, EdgeOptions? options = null)
         {
@@ -33,7 +34,7 @@ namespace Scraper.Core.Sources
             };
 
             page = new Class.Page() { baseUrl = conf.scraperConfiguration.baseUrl, catalogUrl = conf.scraperConfiguration.catalogUrl, pageUrl = conf.scraperConfiguration.pages };
-            server = new Server()
+            ftpServer = new FTPServer()
             {
                 url = conf.serverConfiguration.url,
                 username = conf.serverConfiguration.username,
@@ -97,14 +98,14 @@ namespace Scraper.Core.Sources
                     chapter.images.Add(new Image(page.image));
                 }
 
-                server.connect();
+                ftpServer.connect();
 
-                if (!server.client.DirectoryExists($"{server.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
-                    server.client.CreateDirectory($"{server.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
+                if (!ftpServer.client.DirectoryExists($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
+                    ftpServer.client.CreateDirectory($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
 
-                server.rootPath += $"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}/";
+                ftpServer.rootPath += $"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}/";
 
-                MangaovhUploader uploader = new MangaovhUploader(server);
+                MangaovhUploader uploader = new MangaovhUploader(ftpServer);
                 uploader.upload(chapter);
 
             }

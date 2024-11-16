@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium.Edge;
+using Scraper.Core.Classes.General;
 
 namespace Scraper.Core.Interfaces
 {
@@ -8,6 +9,7 @@ namespace Scraper.Core.Interfaces
         public EdgeDriver driver { get; set; }
         public IPage page { get; set; }
         public ITitle title { get; set; }
+        public Server server { get; set; }
         public void getPages();
         public void getChapters();
         public void getImages();

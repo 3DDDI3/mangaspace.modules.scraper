@@ -17,11 +17,12 @@ namespace Scraper.Core.Sources
 {
     public class Mangalib : IScraper
     {
-        private IServer server;
+        private IFTPServer ftpServer;
         public string baseUrl { get; set; }
         public EdgeDriver driver { get; set; }
         public IPage page { get; set; }
         public ITitle title { get; set; }
+        public Server server { get; set; }
 
         public Mangalib(Configuration conf, EdgeOptions? options = null)
         {
@@ -34,7 +35,7 @@ namespace Scraper.Core.Sources
             };
 
             page = new Page() { baseUrl = conf.scraperConfiguration.baseUrl, catalogUrl = conf.scraperConfiguration.catalogUrl, pageUrl = conf.scraperConfiguration.pages };
-            server = new Server()
+            ftpServer = new FTPServer()
             {
                 url = conf.serverConfiguration.url,
                 username = conf.serverConfiguration.username,
@@ -171,11 +172,11 @@ namespace Scraper.Core.Sources
 
             }
 
-            server.rootPath = $"{server.rootPath}{title.altName}/";
-            server.connect();
+            ftpServer.rootPath = $"{ftpServer.rootPath}{title.altName}/";
+            ftpServer.connect();
 
-            if (!server.client.DirectoryExists(server.rootPath))
-                server.client.CreateDirectory(server.rootPath);
+            if (!ftpServer.client.DirectoryExists(ftpServer.rootPath))
+                ftpServer.client.CreateDirectory(ftpServer.rootPath);
 
         }
 
@@ -275,7 +276,7 @@ namespace Scraper.Core.Sources
         {
             var url = Regex.Replace(driver.Url, @"(\?[a-zA-z\-\=""]+)$", "");
 
-            MangalibUploader uploader = new MangalibUploader(server);
+            MangalibUploader uploader = new MangalibUploader(ftpServer);
 
             foreach (var chapter in title.chapters)
             {

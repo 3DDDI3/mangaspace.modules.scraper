@@ -1,5 +1,8 @@
 {
-  "token": "asdasd",
+  "api": {
+    "token": "13|sdO6hhsLUiMrxzkqc14WSGAq125mzyUzpir6IwQr8001ea8a",
+    "baseUrl": "http://api.mangaspace.ru:83/"
+  },
   "remanga": {
     "baseUrl": "https://remanga.org/",
     "catalogUrl": "manga",
