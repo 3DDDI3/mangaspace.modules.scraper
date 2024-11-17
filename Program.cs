@@ -1,12 +1,9 @@
 ﻿using System.Text;
-using System.Threading.Channels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using Scraper.Core.Classes;
 using Scraper.Core.Classes.General;
 using Scraper.Core.Classes.RabbitMQ;
 using Scraper.Core.Sources;
@@ -90,7 +87,7 @@ public class TaskService : BackgroundService
         _rmq.consumer.Received += (model, ea) =>
         {
             _rmq.eventArgs = ea;
-            _rmq.rmqMessage= new RMQMessage(ea);
+            _rmq.rmqMessage = new RMQMessage(ea);
 
             _logger.LogInformation($"Получено задание {_rmq.rmqMessage.jobId} с сообщением: {_rmq.rmqMessage.message}");
 
@@ -102,9 +99,9 @@ public class TaskService : BackgroundService
 
         _rmq.channel.BasicConsume(queue: "request", autoAck: false, consumer: _rmq.consumer);
 
-        //byte[] message = Encoding.UTF8.GetBytes("test_message");
+        byte[] message = Encoding.UTF8.GetBytes("test_message");
 
-        //_rmq.channel.BasicPublish(exchange: "scraper", routingKey: "respones", basicProperties: null, body: message);
+        _rmq.channel.BasicPublish(exchange: "scraper", routingKey: "response", basicProperties: null, body: message);
     }
 
     public void Restart()

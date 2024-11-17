@@ -167,7 +167,7 @@ namespace Scraper.Core.Sources
 
                 title.name = driver.FindElement(By.XPath("//div[@class='media-name__main']")).Text;
                 title.altName = driver.FindElement(By.XPath("//div[@class='media-name__alt']")).Text;
-                title.cover = new Image(driver.FindElement(By.XPath("//div[@class='media-sidebar__cover paper']/img")).GetAttribute("href"));
+                title.cover.Add(new Image(driver.FindElement(By.XPath("//div[@class='media-sidebar__cover paper']/img")).GetAttribute("href")));
                 title.genres = driver.FindElements(By.XPath("//div[@class='media-tags']/a")).Select(x => x.GetAttribute("href")).ToList();
 
             }

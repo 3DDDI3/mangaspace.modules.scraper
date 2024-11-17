@@ -1,27 +1,23 @@
-﻿using FluentFTP;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using OpenQA.Selenium;
 using RussianTransliteration;
 using Scraper.Core.Enums;
 using Scraper.Core.Interfaces;
-using SixLabors.ImageSharp.Formats.Webp;
-using System.Net;
 using System.Text.RegularExpressions;
-using ImageSharp = SixLabors.ImageSharp.Image;
-using Scraper.Core.Classes.Uploader;
 using Scraper.Core.Classes.General;
 using OpenQA.Selenium.Edge;
 using Scraper.Core.DTO;
 using Microsoft.Extensions.Logging;
-using Scraper.Core.Classes.RabbitMQ;
 using RestSharp;
+using Scraper.Core.Classes.RabbitMQ;
+using System.Text;
 
 namespace Scraper.Core.Sources
 {
     public class Remanga:IScraper
     {
         private IFTPServer ftpServer;
+        private RMQ rmq;
         public string baseUrl { get; set; }
         public EdgeDriver driver { get; set; }
         public IPage page { get; set; }
@@ -33,7 +29,8 @@ namespace Scraper.Core.Sources
         public Remanga(Configuration conf, RMQ rmq, ILogger logger)
         {
             this.logger = logger;
-            server = new Server(conf);
+            this.rmq = rmq;
+            server = new Server(conf, logger, rmq);
 
             title = new Title()
             {
@@ -121,8 +118,12 @@ namespace Scraper.Core.Sources
                 persons = new List<IPerson>(),
                 contacts = new List<string>(),
                 genres = new List<string>(),
+                cover = new List<IImage>(),
                 chapters = new List<IChapter>()
             };
+
+            if (driver.FindElements(By.XPath("//div[@class='relative aspect-[2/3] overflow-hidden rounded-[16px] bg-[var(--bg-primary)] shadow-xl']/img")).Count() > 0)
+                title.cover.Add(new Image(driver.FindElement(By.XPath("//div[@class='relative aspect-[2/3] overflow-hidden rounded-[16px] bg-[var(--bg-primary)] shadow-xl']/img")).GetAttribute("src")));
 
             if (driver.FindElements(By.XPath("//div[@class='flex p-4']/button[@class='Button_button___CisL Button_button___CisL Button_contained__8_KFk Button_contained-primary__IViyX Button_fullWidth__Dgoqh']")).Count > 0)
                 driver.FindElement(By.XPath("//div[@class='flex p-4']/button[@class='Button_button___CisL Button_button___CisL Button_contained__8_KFk Button_contained-primary__IViyX Button_fullWidth__Dgoqh']")).Click();
@@ -227,6 +228,11 @@ namespace Scraper.Core.Sources
                         break;
                 }
             }
+
+            server.execute("v1.0/titles", title, Method.Get);
+
+            
+
         }
 
         public void getPersons()
@@ -274,6 +280,8 @@ namespace Scraper.Core.Sources
             foreach (var person in title.persons)
             {
                 driver.Navigate().GoToUrl(person.url);
+                if (driver.FindElements(By.XPath("//div[@class='Avatar_avatar__hG0bH Avatar_colorDefault__MHL29 Avatar_avatar__CanNK']/img")).Count() > 0)
+                    person.image = new Image(driver.FindElement(By.XPath("//div[@class='Avatar_avatar__hG0bH Avatar_colorDefault__MHL29 Avatar_avatar__CanNK']/img")).GetAttribute("src"));
                 if (person.type == PersonType.translator)
                 {
                     person.name = driver.FindElement(By.XPath("//h1[@class='Typography_h3___I3IT Typography_lineClamp-1__ijYgf Typography_lineClamp__Pa1wi Team_name__FLyYc']")).Text;
@@ -300,10 +308,16 @@ namespace Scraper.Core.Sources
                 }
             }
 
-            server
+            var args = new Dictionary<string, string>()
+            {
+                ["ru_name"] = title.name,
+            };
 
-            server.init("v1.0/titles/persons");
-            var res = server.client.Post(server.request.AddJsonBody(JsonConvert.SerializeObject(title)));
+            server.execute("v1.0/titles", args, Method.Get);
+
+            var createdTitle = JsonConvert.DeserializeObject<Title>(server.response.Content);
+
+            server.execute($"v1.0/titles/{createdTitle.slug}/persons", title.persons, Method.Post);
 
         }
 

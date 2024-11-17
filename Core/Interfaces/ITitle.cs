@@ -17,7 +17,8 @@ namespace Scraper.Core.Interfaces
         /// Английское название
         /// </summary>
         public string altName { get; set; }
-        public IImage cover { get; set; }
+        public string slug { get; set; }
+        public List<IImage> cover { get; set; }
         public string otherNames { get; set; }
         public string description { get; set; }
         public string type { get; set; }

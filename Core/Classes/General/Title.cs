@@ -12,7 +12,8 @@ namespace Scraper.Core.Classes.General
     {
         public string name { get; set; }
         public string altName { get; set; }
-        public IImage cover { get; set; }
+        public string slug {  get; set; }
+        public List<IImage> cover { get; set; }
         public string description { get; set; }
         public string type { get; set; }
         public string releaseFormat { get; set; }
