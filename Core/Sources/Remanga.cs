@@ -30,7 +30,7 @@ namespace Scraper.Core.Sources
         {
             this.logger = logger;
             this.rmq = rmq;
-            server = new Server(conf, logger, rmq);
+            server = new Server(conf);
 
             title = new Title()
             {

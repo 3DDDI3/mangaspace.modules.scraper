@@ -30,6 +30,17 @@ namespace Scraper.Core.Classes.RabbitMQ
                 Port = conf.rabbitMQConfiguration.port,
                 HostName = conf.rabbitMQConfiguration.hostname
             };
+        }
+
+        public void publish(string excange, string routingKey, ReadOnlyMemory<byte> body)
+        {
+            connection = factory.CreateConnection();
+            channel = connection.CreateModel();
+            channel.BasicPublish(excange, routingKey, null, body);
+        } 
+
+        public void initConsumer()
+        {
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
             consumer = new EventingBasicConsumer(channel);

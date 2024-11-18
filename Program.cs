@@ -84,14 +84,15 @@ public class TaskService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _rmq.initConsumer();
         _rmq.consumer.Received += (model, ea) =>
         {
             _rmq.eventArgs = ea;
-            _rmq.rmqMessage = new RMQMessage(ea);
+            var message = new RMQMessage(ea);
 
             _logger.LogInformation($"Получено задание {_rmq.rmqMessage.jobId} с сообщением: {_rmq.rmqMessage.message}");
 
-            Remanga remanga = new Remanga(_conf, _rmq, _logger);
+                Remanga remanga = new Remanga(_conf, _rmq, _logger);
             remanga.parse();
 
             _rmq.channel.BasicAck(ea.DeliveryTag, false);
@@ -99,9 +100,9 @@ public class TaskService : BackgroundService
 
         _rmq.channel.BasicConsume(queue: "request", autoAck: false, consumer: _rmq.consumer);
 
-        byte[] message = Encoding.UTF8.GetBytes("test_message");
+        //byte[] message = Encoding.UTF8.GetBytes("test_message");
 
-        _rmq.channel.BasicPublish(exchange: "scraper", routingKey: "response", basicProperties: null, body: message);
+        //_rmq.publish("scraper", routingKey: "response", message);
     }
 
     public void Restart()
