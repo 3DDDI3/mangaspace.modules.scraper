@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using RestSharp;
 using Scraper.Core.Classes.RabbitMQ;
 using System.Text;
+using RabbitMQ.Client;
 
 namespace Scraper.Core.Sources
 {
@@ -134,7 +135,7 @@ namespace Scraper.Core.Sources
 
             if (!ftpServer.client.DirectoryExists($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
                 ftpServer.client.CreateDirectory($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
-                
+
             ftpServer.rootPath += $"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}/";
 
             ftpServer.disconnect();
@@ -191,7 +192,7 @@ namespace Scraper.Core.Sources
                             case "Закончен":
                                 title.translateStatus = TranslateStatus.finished;
                                 break;
-                                
+
                             case "Заморожен":
                                 title.translateStatus = TranslateStatus.freezed;
                                 break;
@@ -231,8 +232,11 @@ namespace Scraper.Core.Sources
 
             server.execute("v1.0/titles", title, Method.Get);
 
-            
+            server.execute("v1.0/titles", new Dictionary<string, string>() { ["eng_name"] = title.altName, ["ru_name"] = title.name }, Method.Get);
 
+            var createdTitle = JsonConvert.DeserializeObject<Title[]>(server.response.Content)[0];
+
+            rmq.send("scraper", "response", createdTitle.slug);
         }
 
         public void getPersons()

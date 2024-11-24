@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using RestSharp;
 using Scraper.Core.Classes.RabbitMQ;
+using System.Runtime.InteropServices;
 
 namespace Scraper.Core.Classes.General
 {
@@ -20,7 +21,7 @@ namespace Scraper.Core.Classes.General
             client = new RestClient(new Uri(conf.apiConfiguration.baseUrl));
         }
 
-        public void execute<T>(string resource, T obj, Method method)
+        public void execute(string resource, object obj, Method method)
         {
             request = new RestRequest(resource, method);
 
@@ -28,6 +29,7 @@ namespace Scraper.Core.Classes.General
             {
                 ["Accept"] = "application/json",
                 ["Authorization"] = $"Bearer {conf.apiConfiguration.token}",
+                ["User-Agent"] = $"{conf.appConfiguration.name}/{conf.appConfiguration.version} ({RuntimeInformation.OSDescription};{RuntimeInformation.OSArchitecture};{RuntimeInformation.FrameworkDescription}) lang=ru-RU",
             });
             request.AddJsonBody(JsonConvert.SerializeObject(obj));
             response = client.Execute(request);
@@ -40,12 +42,17 @@ namespace Scraper.Core.Classes.General
             request = new RestRequest(resource, method);
 
             foreach (var arg in args)
+            {
+                if (String.IsNullOrEmpty(arg.Value))
+                    continue;
                 request.AddUrlSegment(arg.Key, arg.Value);
+            }
 
             request.AddHeaders(new Dictionary<string, string>()
             {
                 ["Accept"] = "application/json",
                 ["Authorization"] = $"Bearer {conf.apiConfiguration.token}",
+                ["User-Agent"] = $"{conf.appConfiguration.name}/{conf.appConfiguration.version} ({RuntimeInformation.OSDescription};{RuntimeInformation.OSArchitecture};{RuntimeInformation.FrameworkDescription}) lang=ru-RU",
             });
 
             response = client.Execute(request);

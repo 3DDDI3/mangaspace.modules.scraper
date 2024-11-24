@@ -6,7 +6,7 @@ namespace Scraper.Core.Classes.RabbitMQ
     public class RMQMessage
     {
         public string message { get; set; }
-        public IDictionary<string, object> headers { get; set; }
+        private IDictionary<string, object> headers { get; set; }
         public string jobId { get; set; }
         public RMQMessage(BasicDeliverEventArgs eventArgs)
         {

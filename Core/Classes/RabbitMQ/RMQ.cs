@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using Newtonsoft.Json;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Scraper.Core.Classes.General;
 using System;
@@ -29,10 +30,23 @@ namespace Scraper.Core.Classes.RabbitMQ
                 Password = conf.rabbitMQConfiguration.password,
                 Port = conf.rabbitMQConfiguration.port,
                 HostName = conf.rabbitMQConfiguration.hostname
-            };
+            }; 
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
             consumer = new EventingBasicConsumer(channel);
+        }
+
+        public void send(string exchange, string routingKey, object message)
+        {
+            byte[] _message = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
+
+            var properties = channel.CreateBasicProperties();
+            properties.Headers = new Dictionary<string, object>
+            {
+                { "job_id", rmqMessage.jobId }
+            };
+            channel = connection.CreateModel();
+            channel.BasicPublish(exchange, routingKey, properties, _message);
         }
     }
 }
