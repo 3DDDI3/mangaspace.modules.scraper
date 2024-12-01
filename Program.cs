@@ -91,10 +91,12 @@ public class TaskService : BackgroundService
             _rmq.eventArgs = ea;
             _rmq.rmqMessage = new RMQMessage(ea);
 
-            _logger.LogInformation($"Получено задание {_rmq.rmqMessage.jobId} с сообщением: {_rmq.rmqMessage.message}");
+            _logger.LogInformation($"Получено задание {_rmq.rmqMessage.jobId} с сообщением: {Encoding.UTF8.GetString(ea.Body.ToArray())}");
                 
             Remanga remanga = new Remanga(_conf, _rmq, _logger);
-            remanga.parse();
+            remanga.parseChapters();
+
+
 
             byte[] message = Encoding.UTF8.GetBytes("test_message");
 
@@ -104,8 +106,6 @@ public class TaskService : BackgroundService
         };
 
         _rmq.channel.BasicConsume(queue: "request", autoAck: false, consumer: _rmq.consumer);
-
-      
     }
 
     public void Restart()
