@@ -92,9 +92,22 @@ public class TaskService : BackgroundService
             _rmq.rmqMessage = new RMQMessage(ea);
 
             _logger.LogInformation($"Получено задание {_rmq.rmqMessage.jobId} с сообщением: {Encoding.UTF8.GetString(ea.Body.ToArray())}");
-                
-            Remanga remanga = new Remanga(_conf, _rmq, _logger);
-            remanga.parseChapters();
+
+            switch (_rmq.rmqMessage.RequestDTO.scraperDTO.engine)
+            {
+                case "remanga":
+                    Remanga remanga = new Remanga(_conf, _rmq, _logger);
+                    switch (_rmq.rmqMessage.RequestDTO.scraperDTO.action)
+                    {
+                        case "chapters-parse":
+                            remanga.parseChapters();
+                            break;
+                    }
+                    break;
+            }
+
+            
+           
 
 
 

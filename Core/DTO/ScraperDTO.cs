@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Scraper.Core.DTO
 {
-    public class ResponseDTO
+    public class ScraperDTO
     {
+        public string action { get; set; }
+        public string engine { get; set; }
     }
 }

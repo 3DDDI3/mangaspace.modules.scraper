@@ -10,5 +10,6 @@ namespace Scraper.Core.DTO
     {
         public string pages { get; set; }
         public TitleDTO titleDTO { get; set; }
+        public ScraperDTO scraperDTO { get; set; }
     }
 }
