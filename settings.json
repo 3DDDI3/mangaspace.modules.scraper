@@ -1,4 +1,8 @@
 {
+  "app": {
+    "name": "MangaSpaceScraper",
+    "version": "1.0.0"
+  },
   "api": {
     "token": "2|PNpK2uZG9CEKxS1i6cZQaZVQD53mzjhImwGHa6Uh97de1ed3",
     "baseUrl": "http://api.mangaspace.ru:83/"

@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace Scraper.Core.DTO
 {
-    public class TitleDTO
+    public class ChapterDTO
     {
-        public string url { get;set;}
-        public List<ChapterDTO> chapters { get; set;}
+        public string name { get; set; }
+        public string url { get; set; }
+        public string number { get; set; }
     }
 }

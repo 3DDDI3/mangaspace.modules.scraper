@@ -3,6 +3,7 @@
     public class Configuration
     {
         public ApiConfiguration apiConfiguration { get; set; }
+        public AppConfiguration appConfiguration { get; set; }
         public ScraperConfiguration scraperConfiguration { get; set; }
         public ServerConfiguration serverConfiguration { get; set; }
         public RabbitMQConfiguration rabbitMQConfiguration { get;set; }
@@ -19,6 +20,12 @@
     {
         public string token { get; set; }
         public string baseUrl { get; set; }
+    }
+
+    public class AppConfiguration
+    {
+        public string name { get; set; }
+        public string version { get; set; }
     }
 
     public class ServerConfiguration

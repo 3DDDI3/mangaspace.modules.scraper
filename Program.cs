@@ -79,29 +79,46 @@ public class TaskService : BackgroundService
         _conf.serverConfiguration = conf.GetSection("server").Get<ServerConfiguration>();
         _conf.scraperConfiguration = conf.GetSection("remanga").Get<ScraperConfiguration>();
         _conf.apiConfiguration = conf.GetSection("api").Get<ApiConfiguration>();
+        _conf.appConfiguration = conf.GetSection("app").Get<AppConfiguration>();
         _rmq = new RMQ(_conf);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+       
         _rmq.consumer.Received += (model, ea) =>
         {
             _rmq.eventArgs = ea;
             _rmq.rmqMessage = new RMQMessage(ea);
 
-            _logger.LogInformation($"Получено задание {_rmq.rmqMessage.jobId} с сообщением: {_rmq.rmqMessage.message}");
+            _logger.LogInformation($"Получено задание {_rmq.rmqMessage.jobId} с сообщением: {Encoding.UTF8.GetString(ea.Body.ToArray())}");
 
-            Remanga remanga = new Remanga(_conf, _rmq, _logger);
-            remanga.parse();
+            switch (_rmq.rmqMessage.RequestDTO.scraperDTO.engine)
+            {
+                case "remanga":
+                    Remanga remanga = new Remanga(_conf, _rmq, _logger);
+                    switch (_rmq.rmqMessage.RequestDTO.scraperDTO.action)
+                    {
+                        case "chapters-parse":
+                            remanga.parseChapters();
+                            break;
+                    }
+                    break;
+            }
+
+            
+           
+
+
+
+            byte[] message = Encoding.UTF8.GetBytes("test_message");
+
+            _rmq.channel.BasicPublish(exchange: "scraper", routingKey: "response", basicProperties: null, body: message);
 
             _rmq.channel.BasicAck(ea.DeliveryTag, false);
         };
 
         _rmq.channel.BasicConsume(queue: "request", autoAck: false, consumer: _rmq.consumer);
-
-        byte[] message = Encoding.UTF8.GetBytes("test_message");
-
-        _rmq.channel.BasicPublish(exchange: "scraper", routingKey: "response", basicProperties: null, body: message);
     }
 
     public void Restart()

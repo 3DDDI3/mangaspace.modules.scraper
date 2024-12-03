@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using RestSharp;
 using Scraper.Core.Classes.RabbitMQ;
 using System.Text;
+using RabbitMQ.Client;
 
 namespace Scraper.Core.Sources
 {
@@ -33,21 +34,19 @@ namespace Scraper.Core.Sources
             server = new Server(conf, logger, rmq);
 
             title = new Title()
-            {
+            { 
                 persons = new List<IPerson>(),
                 contacts = new List<string>(),
                 genres = new List<string>(),
                 chapters = new List<IChapter>()
             };
 
-            RequestDTO requestDTO = JsonConvert.DeserializeObject<RequestDTO>(rmq.rmqMessage.message);
-
             page = new Page()
             {
                 baseUrl = conf.scraperConfiguration.baseUrl,
                 catalogUrl = conf.scraperConfiguration.catalogUrl,
                 pageUrl = conf.scraperConfiguration.pages,
-                pages = requestDTO.pages.Split(",").Select(x => int.Parse(x)).ToList()
+                pages = rmq.rmqMessage.RequestDTO.pages?.Split(",").Select(x => int.Parse(x)).ToList()
             };
 
             ftpServer = new FTPServer()
@@ -77,7 +76,7 @@ namespace Scraper.Core.Sources
 
             driver.FindElement(By.XPath("//input[@class='SwitchBase_input__9Z5ZO Switch_input__bHF07']")).Click();
 
-            if (page.pages.Count > 0)
+            if (page.pages == null)
                 return;
 
             for (int i = 0; i < int.Parse(driver.FindElement(By.XPath("//button[@class='Button_button___CisL Button_button___CisL Button_text__IGNQ6 Button_text-primary__WgBRV hidden-xs'][2]")).Text); i++)
@@ -111,6 +110,13 @@ namespace Scraper.Core.Sources
             }
         }
 
+        public void parseChapters()
+        {
+            driver.Navigate().GoToUrl(rmq.rmqMessage.RequestDTO.titleDTO.url);
+            getTitleInfo();
+            getChapters();
+        }
+
         public void getTitleInfo()
         {
             title = new Title()
@@ -134,7 +140,7 @@ namespace Scraper.Core.Sources
 
             if (!ftpServer.client.DirectoryExists($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
                 ftpServer.client.CreateDirectory($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
-                
+
             ftpServer.rootPath += $"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}/";
 
             ftpServer.disconnect();
@@ -191,7 +197,7 @@ namespace Scraper.Core.Sources
                             case "Закончен":
                                 title.translateStatus = TranslateStatus.finished;
                                 break;
-                                
+
                             case "Заморожен":
                                 title.translateStatus = TranslateStatus.freezed;
                                 break;
@@ -229,10 +235,13 @@ namespace Scraper.Core.Sources
                 }
             }
 
-            server.execute("v1.0/titles", title, Method.Get);
+            //server.execute("v1.0/titles", title, Method.Get);
 
-            
+            //server.execute("v1.0/titles", new Dictionary<string, string>() { ["eng_name"] = title.altName, ["ru_name"] = title.name }, Method.Get);
 
+            //var createdTitle = JsonConvert.DeserializeObject<Title[]>(server.response.Content)[0];
+
+            //rmq.send("scraper", "chapter-response", createdTitle.slug);
         }
 
         public void getPersons()
@@ -349,6 +358,16 @@ namespace Scraper.Core.Sources
                 });
                 //server.init("v1.0/titles/chapters");
                 //var res = server.client.Post(server.request.AddJsonBody(JsonConvert.SerializeObject(title.chapters)));
+
+                server.execute("v1.0/titles", title, Method.Get);
+
+                server.execute("v1.0/titles", new Dictionary<string, string>() { ["eng_name"] = title.altName, ["ru_name"] = title.name }, Method.Get);
+
+                var createdTitle = JsonConvert.DeserializeObject<Title[]>(server.response.Content)[0];
+
+                var _title = new TitleDTO() { chapters = title.chapters.Select(x => new ChapterDTO() { name = x.name, number = x.number, url = x.url }).ToList() };
+
+                rmq.send("scraper", "chapter-response", _title);
                 break;
             }
         }
