@@ -46,7 +46,7 @@ namespace Scraper.Core.Sources
                 baseUrl = conf.scraperConfiguration.baseUrl,
                 catalogUrl = conf.scraperConfiguration.catalogUrl,
                 pageUrl = conf.scraperConfiguration.pages,
-                pages = rmq.rmqMessage.RequestDTO.pages?.Split(",").Select(x => int.Parse(x)).ToList()
+                pages = rmq.rmqMessage.RequestDTO.page?.Split(",").Select(x => int.Parse(x)).ToList()
             };
 
             ftpServer = new FTPServer()
@@ -133,6 +133,9 @@ namespace Scraper.Core.Sources
 
             if (driver.FindElements(By.XPath("//div[@class='flex p-4']/button[@class='Button_button___CisL Button_button___CisL Button_contained__8_KFk Button_contained-primary__IViyX Button_fullWidth__Dgoqh']")).Count > 0)
                 driver.FindElement(By.XPath("//div[@class='flex p-4']/button[@class='Button_button___CisL Button_button___CisL Button_contained__8_KFk Button_contained-primary__IViyX Button_fullWidth__Dgoqh']")).Click();
+
+            if (driver.FindElements(By.XPath("//div[@class='CookieConsent_consentContainer__Wi3DI']")).Count() > 0)
+                driver.FindElement(By.XPath("//button[@class='Button_button___CisL Button_button___CisL Button_contained__8_KFk CookieConsent_consentButton__sAqzY']")).Click();
 
             title.name = driver.FindElement(By.XPath("//h1[@class='Typography_h3___I3IT']")).Text;
 
@@ -341,7 +344,9 @@ namespace Scraper.Core.Sources
                 js.ExecuteScript("window.scrollTo(0, document.getElementsByTagName(\"body\")[0].scrollHeight)");
             }
 
-            foreach(var chapter in driver.FindElements(By.XPath("//div[@class='Chapters_container__5S4y_'][1]/a")))
+            var chapters = driver.FindElements(By.XPath("//div[@class='Chapters_container__5S4y_'][1]/a"));
+
+            foreach (var chapter in chapters)
             {
                 //chapter.FindElements(By.XPath(".//div[@class='Chapters_info__UlRTg']"))
                 if (chapter.FindElements(By.XPath(".//div[@class='Chapters_info__UlRTg']/span")).Count == 0) continue;
@@ -365,9 +370,19 @@ namespace Scraper.Core.Sources
 
                 var createdTitle = JsonConvert.DeserializeObject<Title[]>(server.response.Content)[0];
 
-                var _title = new TitleDTO() { chapters = title.chapters.Select(x => new ChapterDTO() { name = x.name, number = x.number, url = x.url }).ToList() };
+                var _title = new ResponseDTO(
+                    new TitleDTO("", new List<ChapterDTO>() { new ChapterDTO(
+                        chapter.GetAttribute("href"),
+                        Regex.Matches(chapter.FindElement(By.XPath(".//p[@class='Typography_body1__YTqxB Typography_color-inherit__Wstd_ Chapters_title__ocJer']")).Text, @"Глава\s*(\d+)\s*•?")[0].Groups[1].Value,
+                        null,
+                        true
+                        ) 
+                    }),
+                    new ScraperDTO("", "")
+                );
 
-                rmq.send("scraper", "chapter-response", _title);
+                rmq.send("scraper", "getChapterResponse", _title);
+
                 break;
             }
         }

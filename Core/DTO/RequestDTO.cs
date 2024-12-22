@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Scraper.Core.DTO
 {
-    public class RequestDTO
+    public class RequestDTO : BaseDTO
     {
-        public string pages { get; set; }
-        public TitleDTO titleDTO { get; set; }
-        public ScraperDTO scraperDTO { get; set; }
+        public RequestDTO(TitleDTO titleDTO, ScraperDTO scraperDTO, string? page = null) : base(titleDTO, scraperDTO, page)
+        {
+        }
     }
 }

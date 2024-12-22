@@ -10,5 +10,11 @@ namespace Scraper.Core.DTO
     {
         public string action { get; set; }
         public string engine { get; set; }
+
+        public ScraperDTO(string action, string engine)
+        {
+            this.action = action;
+            this.engine = engine;
+        }
     }
 }

@@ -25,6 +25,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Core\Новая папка\" />
+  </ItemGroup>
+
   <ProjectExtensions><VisualStudio><UserProperties settings_1json__JsonSchema=" &quot;token&quot;: &quot;asdasd&quot;" /></VisualStudio></ProjectExtensions>
 
 </Project>

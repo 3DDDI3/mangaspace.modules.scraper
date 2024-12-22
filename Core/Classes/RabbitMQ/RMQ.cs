@@ -37,7 +37,7 @@ namespace Scraper.Core.Classes.RabbitMQ
         }
 
         public void send(string exchange, string routingKey, object message)
-        {
+        { 
             byte[] _message = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
 
             var properties = channel.CreateBasicProperties();
@@ -45,7 +45,7 @@ namespace Scraper.Core.Classes.RabbitMQ
             {
                 { "job_id", rmqMessage.jobId }
             };
-            channel = connection.CreateModel();
+            //channel = connection.CreateModel();
             channel.BasicPublish(exchange, routingKey, properties, _message);
         }
     }
