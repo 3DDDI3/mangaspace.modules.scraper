@@ -9,11 +9,13 @@ namespace Scraper.Core.DTO
     public class TitleDTO
     {
         public string url { get;set;}
+        public string name { get;set;}
         public List<ChapterDTO> chapterDTO { get; set;}
-        public TitleDTO(string url, List<ChapterDTO> chapterDTO)
+        public TitleDTO(string url, List<ChapterDTO> chapterDTO, string? name = null)
         {
             this.url = url;
             this.chapterDTO = chapterDTO;
+            this.name = name;
         }
     }
 }

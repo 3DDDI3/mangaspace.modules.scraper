@@ -8,7 +8,6 @@ namespace Scraper.Core.DTO
 {
     public class ResponseDTO : BaseDTO
     {
-        public extern ResponseDTO();
-        public ResponseDTO(TitleDTO titleDTO, ScraperDTO scraperDTO, string? page = null) : base(titleDTO, scraperDTO, page) { }
+        public ResponseDTO(TitleDTO titleDTO, ScraperDTO scraperDTO, List<int> pages = null) : base(titleDTO, scraperDTO, pages) { }
     }
 }

@@ -19,7 +19,7 @@ namespace Scraper.Core.Classes.Uploader
             server.connect();
         }
 
-        public void upload(IChapter chapter)
+        public void uploadChapterImages(IChapter chapter)
         {
             server.rootPath = $"{server.rootPath}{chapter.volume}/";
 
@@ -36,11 +36,11 @@ namespace Scraper.Core.Classes.Uploader
                 {
                     try
                     {
-                        incomingStream = httpClient.GetStreamAsync($"{chapter.images[i].path}.{chapter.images[i].extension}").Result;
-                        image = SixLabors.ImageSharp.Image.Load(incomingStream);
-                        outgoingStream = new MemoryStream();
-                        image.SaveAsWebp(outgoingStream, new WebpEncoder() { FileFormat = WebpFileFormatType.Lossless });
-                        server.client.UploadStream(outgoingStream, $"{server.rootPath}{i + 1}.webp");
+                        //incomingStream = httpClient.GetStreamAsync($"{chapter.images[i].path}.{chapter.images[i].extension}").Result;
+                        //image = SixLabors.ImageSharp.Image.Load(incomingStream);
+                        //outgoingStream = new MemoryStream();
+                        //image.SaveAsWebp(outgoingStream, new WebpEncoder() { FileFormat = WebpFileFormatType.Lossless });
+                        //server.client.UploadStream(outgoingStream, $"{server.rootPath}{i + 1}.webp");
                     }
                     catch (Exception ex)
                     {

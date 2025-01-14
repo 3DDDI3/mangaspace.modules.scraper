@@ -12,6 +12,6 @@ namespace Scraper.Core.Interfaces
         public Image image { get; set; }
         public Stream incomingStream { get; set; }
         public MemoryStream outgoingStream { get; set; }
-        public void upload(IChapter chapter);
+        public void uploadChapterImages(IChapter chapter);
     }
 }

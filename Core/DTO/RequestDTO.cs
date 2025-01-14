@@ -8,8 +8,6 @@ namespace Scraper.Core.DTO
 {
     public class RequestDTO : BaseDTO
     {
-        public RequestDTO(TitleDTO titleDTO, ScraperDTO scraperDTO, string? page = null) : base(titleDTO, scraperDTO, page)
-        {
-        }
+        public RequestDTO(TitleDTO titleDTO, ScraperDTO scraperDTO, List<int> pages = null) : base(titleDTO, scraperDTO, pages) { }
     }
 }

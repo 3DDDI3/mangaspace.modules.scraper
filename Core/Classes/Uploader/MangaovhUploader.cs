@@ -17,7 +17,7 @@ namespace Scraper.Core.Classes.Uploader
             server.connect();
         }
 
-        public void upload(IChapter chapter)
+        public void uploadChapterImages(IChapter chapter)
         {
             server.rootPath = $"{server.rootPath}{chapter.volume}/";
 
@@ -34,10 +34,10 @@ namespace Scraper.Core.Classes.Uploader
                 {
                     try
                     {
-                        incomingStream = httpClient.GetStreamAsync($"{chapter.images[i].path}.{chapter.images[i].extension}").Result;
-                        image = SixLabors.ImageSharp.Image.Load(incomingStream);
+                        //incomingStream = httpClient.GetStreamAsync($"{chapter.images[i].path}.{chapter.images[i].extension}").Result;
+                        //image = SixLabors.ImageSharp.Image.Load(incomingStream);
 
-                        var limiter = Math.Ceiling(Convert.ToDouble(image.Height) / 15000);
+                        //var limiter = Math.Ceiling(Convert.ToDouble(image.Height) / 15000);
 
                         //List<SixLabors.ImageSharp.Image> images = new List<SixLabors.ImageSharp.Image>();
 

@@ -69,30 +69,30 @@ namespace Scraper.Core.Sources
 
         public void getImages()
         {
-            stardDriver(new EdgeOptions() { PageLoadStrategy = PageLoadStrategy.Eager });
-            foreach (var chapter in title.chapters)
-            {
+            //stardDriver(new EdgeOptions() { PageLoadStrategy = PageLoadStrategy.Eager });
+            //foreach (var chapter in title.chapters)
+            //{
 
-                driver.Navigate().GoToUrl("https://mangaclub.ru/manga/view/12188-ischezajuschie-ponedelniki/v1-c33.html#1");
+            //    driver.Navigate().GoToUrl("https://mangaclub.ru/manga/view/12188-ischezajuschie-ponedelniki/v1-c33.html#1");
 
-                WebDriverWait wait;
+            //    WebDriverWait wait;
 
-                while (driver.FindElements(By.XPath("//div[@class='manga-lines-page']/a")).Count() > driver.FindElements(By.XPath("//div[@class='vertical container']/img")).Count())
-                    new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            //    while (driver.FindElements(By.XPath("//div[@class='manga-lines-page']/a")).Count() > driver.FindElements(By.XPath("//div[@class='vertical container']/img")).Count())
+            //        new WebDriverWait(driver, TimeSpan.FromSeconds(10));
 
-                driver.FindElements(By.XPath("//div[@class='vertical container']/img")).ToList().ForEach(
-                    x => chapter.images.Add(
-                        new Image(x.GetAttribute("src"))
-                    )
-                );
+            //    driver.FindElements(By.XPath("//div[@class='vertical container']/img")).ToList().ForEach(
+            //        x => chapter.images.Add(
+            //            new Image(x.GetAttribute("src"))
+            //        )
+            //    );
 
-                MangaClubUploader uploader = new MangaClubUploader(ftpServer);
-                uploader.upload(chapter);
+            //    MangaClubUploader uploader = new MangaClubUploader(ftpServer);
+            //    uploader.upload(chapter);
 
-                break;
+            //    break;
 
                
-            }
+            //}
         }
 
         public void getPages()

@@ -33,7 +33,6 @@ namespace Scraper.Core.Classes.RabbitMQ
             }; 
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
-            consumer = new EventingBasicConsumer(channel);
         }
 
         public void send(string exchange, string routingKey, object message)

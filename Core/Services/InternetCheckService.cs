@@ -11,10 +11,10 @@ namespace Scraper.Core.Services
     public class InternetCheckService : IHostedService, IDisposable
     {
         private readonly ILogger<InternetCheckService> _logger;
-        private readonly TaskService _taskService;
+        private readonly ScraperService _taskService;
         private Timer _timer;
 
-        public InternetCheckService(ILogger<InternetCheckService> logger, TaskService taskService)
+        public InternetCheckService(ILogger<InternetCheckService> logger, ScraperService taskService)
         {
             _logger = logger;
             _taskService = taskService;

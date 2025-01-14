@@ -86,27 +86,27 @@ namespace Scraper.Core.Sources
 
             foreach (var chapter in title.chapters)
             {
-                driver.Navigate().GoToUrl($"{path}/{chapter.url}");
+                //driver.Navigate().GoToUrl($"{path}/{chapter.url}");
 
-                IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
-                JObject result = JsonConvert.DeserializeObject<JObject>(js.ExecuteScript("return JSON.stringify(window.__remixContext.state.loaderData)").ToString());
+                //IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+                //JObject result = JsonConvert.DeserializeObject<JObject>(js.ExecuteScript("return JSON.stringify(window.__remixContext.state.loaderData)").ToString());
 
-                JsonObjects.Page[] pages = JsonConvert.DeserializeObject<JsonObjects.Page[]>(result["routes/reader/book/$slug/$chapter"]["chapter"]["pages"].ToString());
+                //JsonObjects.Page[] pages = JsonConvert.DeserializeObject<JsonObjects.Page[]>(result["routes/reader/book/$slug/$chapter"]["chapter"]["pages"].ToString());
 
-                foreach (var page in pages)
-                {
-                    chapter.images.Add(new Image(page.image));
-                }
+                //foreach (var page in pages)
+                //{
+                //    chapter.images.Add(new Image(page.image));
+                //}
 
-                ftpServer.connect();
+                //ftpServer.connect();
 
-                if (!ftpServer.client.DirectoryExists($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
-                    ftpServer.client.CreateDirectory($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
+                //if (!ftpServer.client.DirectoryExists($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
+                //    ftpServer.client.CreateDirectory($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
 
-                ftpServer.rootPath += $"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}/";
+                //ftpServer.rootPath += $"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}/";
 
-                MangaovhUploader uploader = new MangaovhUploader(ftpServer);
-                uploader.upload(chapter);
+                //MangaovhUploader uploader = new MangaovhUploader(ftpServer);
+                //uploader.upload(chapter);
 
             }
         }

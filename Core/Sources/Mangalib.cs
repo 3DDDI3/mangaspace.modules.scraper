@@ -278,25 +278,25 @@ namespace Scraper.Core.Sources
 
             MangalibUploader uploader = new MangalibUploader(ftpServer);
 
-            foreach (var chapter in title.chapters)
-            {
-                driver.Close();
+            //foreach (var chapter in title.chapters)
+            //{
+            //    driver.Close();
 
-                stardDriver(new EdgeOptions() { PageLoadStrategy = PageLoadStrategy.Eager });
+            //    stardDriver(new EdgeOptions() { PageLoadStrategy = PageLoadStrategy.Eager });
 
-                driver.Navigate().GoToUrl(chapter.url);
+            //    driver.Navigate().GoToUrl(chapter.url);
 
-                IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+            //    IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
 
-                MangalibJson.Page[] pages = JsonConvert.DeserializeObject<MangalibJson.Page[]>(js.ExecuteScript("return JSON.stringify(window.__pg)").ToString());
-                foreach (var page in pages)
-                {
-                    chapter.images.Add(new Image($"https://img33.imgslib.link//manga/{Regex.Matches(url, @"http(?:s)?:\/{2}mangalib.me\/([a-zA-Z-]+)")[0].Groups[1].Value}/chapters/{Regex.Matches(chapter.url, @"&id=(\d+)")[0].Groups[1].Value}/{page.u}"));
-                }
+            //    MangalibJson.Page[] pages = JsonConvert.DeserializeObject<MangalibJson.Page[]>(js.ExecuteScript("return JSON.stringify(window.__pg)").ToString());
+            //    foreach (var page in pages)
+            //    {
+            //        chapter.images.Add(new Image($"https://img33.imgslib.link//manga/{Regex.Matches(url, @"http(?:s)?:\/{2}mangalib.me\/([a-zA-Z-]+)")[0].Groups[1].Value}/chapters/{Regex.Matches(chapter.url, @"&id=(\d+)")[0].Groups[1].Value}/{page.u}"));
+            //    }
 
-                uploader.upload(chapter);
-                chapter.images = new List<IImage>();
-            }
+            //    uploader.upload(chapter);
+            //    chapter.images = new List<List<IImage>>();
+            //}
         }
     }
 }

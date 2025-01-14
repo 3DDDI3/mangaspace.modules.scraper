@@ -1,11 +1,12 @@
 {
   "app": {
     "name": "MangaSpaceScraper",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "production": false
   },
   "api": {
     "token": "2|PNpK2uZG9CEKxS1i6cZQaZVQD53mzjhImwGHa6Uh97de1ed3",
-    "baseUrl": "http://api.mangaspace.ru:83/"
+    "baseUrl": "http://api.mangaspace.ru:83"
   },
   "remanga": {
     "baseUrl": "https://remanga.org/",
@@ -31,7 +32,7 @@
     "url": "5.188.44.210",
     "username": "admin",
     "password": "w823eG7a5W3l",
-    "rootPath": "/storage/"
+    "rootPath": ""
   },
   "rabbitmq": {
     "username": "guest",

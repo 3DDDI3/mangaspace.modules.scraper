@@ -1,15 +1,12 @@
-﻿using Newtonsoft.Json.Bson;
-using Scraper.Core.DTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Scraper.Core.Classes.General;
+using Scraper.Core.Classes.RabbitMQ;
 
 namespace Scraper.Core.Interfaces
 {
     public interface IActionHandler
     {
-        void Handle();
+        void Handle(Configuration conf, RMQ rmq, ILogger logger);
     }
 }

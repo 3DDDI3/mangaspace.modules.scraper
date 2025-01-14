@@ -26,6 +26,7 @@
     {
         public string name { get; set; }
         public string version { get; set; }
+        public bool production {  get; set; }
     }
 
     public class ServerConfiguration

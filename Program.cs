@@ -27,9 +27,9 @@ public class Program
                 services.AddTransient<BaseActionHandler>(); // Регистрация фабрики
                 services.AddTransient<IActionHandler, MangalibHandler>();
                 services.AddTransient<IActionHandler, RemangaHandler>();
-                services.AddTransient<TaskService>(); // Изменено на Transient
+                services.AddTransient<ScraperService>(); // Изменено на Transient
                 services.AddHostedService<InternetCheckService>();
-                services.AddHostedService<TaskService>();
+                services.AddHostedService<ScraperService>();
             })
             .ConfigureAppConfiguration(x =>
             {

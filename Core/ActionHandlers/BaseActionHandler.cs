@@ -1,9 +1,8 @@
-﻿using Scraper.Core.Factories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Scraper.Core.Classes.General;
+using Scraper.Core.Classes.RabbitMQ;
+using Scraper.Core.Factories;
 
 namespace Scraper.Core.ActionHandlers
 {
@@ -16,11 +15,11 @@ namespace Scraper.Core.ActionHandlers
             _actionHandlerFactory = actionHandlerFactory;
         }
 
-        public void ExecuteAction(string actionName)
+        public void ExecuteAction(string actionName, Configuration conf, RMQ rmq, ILogger logger)
         {
             var handler = _actionHandlerFactory.GetHandler(actionName);
 
-            handler.Handle();
+            handler.Handle(conf, rmq, logger);
         }
     }
 }

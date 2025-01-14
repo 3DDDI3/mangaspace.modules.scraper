@@ -10,7 +10,6 @@ namespace Scraper.Core.Interfaces
         public IPage page { get; set; }
         public ITitle title { get; set; }
         public Server server { get; set; }
-        public void getPages();
         public void getChapters();
         public void getImages();
         public void getTitleInfo();
