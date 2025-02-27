@@ -107,7 +107,7 @@ namespace Scraper.Core.Sources
 
                     getChapters();                   
                     getPersons();
-                    getImages();
+                    //getImages();
 
                     break;
                     break;
@@ -115,7 +115,7 @@ namespace Scraper.Core.Sources
                 break;
             }
 
-            rmq.send("information", "errorLog", new LogDTO(null, true));
+            //rmq.send("information", "errorLog", new LogDTO(null, true));
             driver.Quit();
         }
         
@@ -143,7 +143,7 @@ namespace Scraper.Core.Sources
             }
             catch (Exception ex)
             {
-                rmq.send("information", "errorLog", new LogDTO(ex.Message));
+                rmq.send("information", "errorLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Ошибка при попытке откртия страницы {driver.Url}"));
             }
 
             getTitleInfo();
@@ -157,7 +157,10 @@ namespace Scraper.Core.Sources
             }
 
             getImages();
+
+            rmq.send("information", "informationLog", new LogDTO(null, true));
             rmq.send("information", "errorLog", new LogDTO(null, true));
+
             driver.Close();
         }
 
@@ -315,7 +318,7 @@ namespace Scraper.Core.Sources
                         break;
                 }
             }
-            rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о тайтле {title.name} завершено успешно", true));
+            rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о тайтле {title.name} завершено успешно"));
         }
 
         

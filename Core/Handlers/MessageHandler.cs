@@ -1,21 +1,22 @@
-﻿using Scraper.Core.Sources;
+﻿using Scraper.Core.Interfaces;
+using Scraper.Core.Sources;
 
 namespace Scraper.Core.Handlers
 {
-    public class MessageHandler
+    public class MessageHandler<T> where T:IScraper
     {
-        private readonly Remanga _remanga;
+        private readonly T _scraper;
         private readonly Dictionary<string, Action> _commandMap;
 
-        public MessageHandler(Remanga remanga)
+        public MessageHandler(T scraper)
         {
-            _remanga = remanga;
+            _scraper = scraper;
 
             _commandMap = new Dictionary<string, Action>
             {
-                { "getChapters", _remanga.getAllChapters },
-                { "parseChapters", _remanga.parseChapters },
-                { "parseTitles", _remanga.parse }
+                { "getChapters", _scraper.getAllChapters },
+                { "parseChapters", _scraper.parseChapters },
+                { "parseTitles", _scraper.parse }
             };
         }
 

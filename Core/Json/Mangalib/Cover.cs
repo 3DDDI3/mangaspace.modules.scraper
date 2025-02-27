@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Scraper.Core.Json.Mangalib
 {
-    public class Page
+    public class Cover
     {
-        public string url { get; set; }
+        public string md { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace Scraper.Core.ActionHandlers
         public void Handle(Configuration conf, RMQ rmq, ILogger logger)
         {
             var remanga = new Remanga(conf, rmq, logger);
-            var messageHandler = new MessageHandler(remanga);
+            var messageHandler = new MessageHandler<Remanga>(remanga);
             messageHandler.HandleMessage(rmq.rmqMessage.RequestDTO.scraperDTO.action);
         }
     }

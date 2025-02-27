@@ -15,7 +15,7 @@ namespace Scraper.Core.Classes.General
         public Image(string? url)
         {
             if (string.IsNullOrEmpty(url)) return;
-            Regex regex = new Regex(@"^(https?://[^\s]+)\.([a-z]{3,4})$");
+            Regex regex = new Regex(@"^(https?://[^*]+)\.([a-z]{3,4})$");
             var matches = regex.Matches(url);
             path = matches[0].Groups[1].Value;
             extension = matches[0].Groups[2].Value;

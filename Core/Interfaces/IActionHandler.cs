@@ -7,6 +7,9 @@ namespace Scraper.Core.Interfaces
 {
     public interface IActionHandler
     {
-        void Handle(Configuration conf, RMQ rmq, ILogger logger);
+        void Handle(Configuration conf, RMQ rmq, ILogger logger)
+        {
+
+        }
     }
 }

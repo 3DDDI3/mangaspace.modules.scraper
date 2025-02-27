@@ -40,11 +40,13 @@ namespace Scraper.Core.Classes.RabbitMQ
             byte[] _message = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
 
             var properties = channel.CreateBasicProperties();
-            properties.Headers = new Dictionary<string, object>
-            {
-                { "job_id", rmqMessage.jobId }
-            };
-            //channel = connection.CreateModel();
+
+            if (rmqMessage != null)
+                properties.Headers = new Dictionary<string, object>
+                {
+                    { "job_id", rmqMessage.jobId }
+                };
+
             channel.BasicPublish(exchange, routingKey, properties, _message);
         }
     }

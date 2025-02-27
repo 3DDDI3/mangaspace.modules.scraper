@@ -183,5 +183,15 @@ namespace Scraper.Core.Sources
                 break;
             }
         }
+
+        public void getAllChapters()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void parseChapters()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

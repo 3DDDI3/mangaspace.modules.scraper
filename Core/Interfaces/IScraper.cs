@@ -13,6 +13,8 @@ namespace Scraper.Core.Interfaces
         public void getChapters();
         public void getImages();
         public void getTitleInfo();
+        public void getAllChapters();
+        public void parseChapters();
         public void getPersons();
         public void parse();
     }

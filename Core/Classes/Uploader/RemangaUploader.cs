@@ -97,7 +97,7 @@ namespace Scraper.Core.Classes.Uploader
 
                             outgoingStream = new MemoryStream();
                             image.Save(outgoingStream, new WebpEncoder());
-
+                                
                             if (conf.appConfiguration.production)
                                 server.client.UploadStream(outgoingStream, $"{server.rootPath}{path}{i + 1}_{j + 1}.webp");
                             else

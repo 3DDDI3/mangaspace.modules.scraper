@@ -1,5 +1,9 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Scraper.Core.Classes.General;
+using Scraper.Core.Classes.RabbitMQ;
+using Scraper.Core.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +16,17 @@ namespace Scraper.Core.Services
     {
         private readonly ILogger<InternetCheckService> _logger;
         private readonly ScraperService _taskService;
+        private readonly Configuration _conf;
+        private readonly RMQ _rmq;
         private Timer _timer;
 
-        public InternetCheckService(ILogger<InternetCheckService> logger, ScraperService taskService)
+        public InternetCheckService(ILogger<InternetCheckService> logger, ScraperService taskService, IConfiguration conf)
         {
             _logger = logger;
             _taskService = taskService;
+            _conf = conf.Get<Configuration>();
+            _conf.rabbitMQConfiguration = conf.GetSection("rabbitmq").Get<RabbitMQConfiguration>();
+            _rmq = new RMQ(_conf);
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -49,6 +58,7 @@ namespace Scraper.Core.Services
             }
             catch
             {
+                _rmq.send("information", "errorLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Ошибка: отсутствие интернет соеднинения", false));
                 return false;
             }
         }

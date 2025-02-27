@@ -8,6 +8,6 @@ namespace Scraper.Core.Json.Mangalib
 {
     public class Branch
     {
-        public Translator[] teams { get; set; }
+        public int branch_id { get; set; }
     }
 }
