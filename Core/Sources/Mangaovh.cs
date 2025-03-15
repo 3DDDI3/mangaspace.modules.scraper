@@ -113,7 +113,7 @@ namespace Scraper.Core.Sources
 
         public void getTitleInfo()
         {
-            title.cover.Add(new Image(Regex.Replace(driver.FindElement(By.XPath("//div[@class='MuiBox-root styles-1wd7fad']/img")).GetAttribute("src"), @"\?[a-zA-z=&0-9]+", "")));
+            title.covers.Add(new Image(Regex.Replace(driver.FindElement(By.XPath("//div[@class='MuiBox-root styles-1wd7fad']/img")).GetAttribute("src"), @"\?[a-zA-z=&0-9]+", "")));
             title.country = driver.FindElement(By.XPath("//div[@class='MuiStack-root styles-vev28']/div/a[@class='MuiTypography-root MuiTypography-body2 MuiLink-root MuiLink-underlineHover styles-1n4t9ik']")).Text;
             title.releaseYear = ushort.Parse(driver.FindElement(By.XPath("//div[@class='MuiStack-root styles-vev28']/div/p[@class='MuiTypography-root MuiTypography-body2 styles-ucj12']")).Text);
             title.name = driver.FindElement(By.XPath("//div[@class='MuiStack-root styles-vev28']/h4[@class='MuiTypography-root MuiTypography-h4 styles-1xvinid']")).Text;

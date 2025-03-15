@@ -50,5 +50,15 @@ namespace Scraper.Core.Classes.Uploader
             }
 
         }
+
+        public void uploadCovers(List<IImage> images)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void uploadPersonalImages(List<IPerson> persons)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

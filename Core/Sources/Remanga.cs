@@ -171,7 +171,7 @@ namespace Scraper.Core.Sources
                 persons = new List<IPerson>(),
                 contacts = new List<string>(),
                 genres = new List<string>(),
-                cover = new List<IImage>(),
+                covers = new List<IImage>(),
                 chapters = new List<IChapter>()
             };
 
@@ -180,7 +180,7 @@ namespace Scraper.Core.Sources
             rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о тайтле {title.name}"));
 
             if (driver.FindElements(By.XPath("//div[@class='relative aspect-[2/3] overflow-hidden rounded-[16px] bg-[var(--bg-primary)] shadow-xl']/img")).Count() > 0)
-                title.cover.Add(new Image(driver.FindElement(By.XPath("//div[@class='relative aspect-[2/3] overflow-hidden rounded-[16px] bg-[var(--bg-primary)] shadow-xl']/img")).GetAttribute("src")));
+                title.covers.Add(new Image(driver.FindElement(By.XPath("//div[@class='relative aspect-[2/3] overflow-hidden rounded-[16px] bg-[var(--bg-primary)] shadow-xl']/img")).GetAttribute("src")));
 
             if (driver.FindElements(By.XPath("//div[@class='flex p-4']/button[@class='Button_button___CisL Button_button___CisL Button_contained__8_KFk Button_contained-primary__IViyX Button_fullWidth__Dgoqh']")).Count > 0)
                 driver.FindElement(By.XPath("//div[@class='flex p-4']/button[@class='Button_button___CisL Button_button___CisL Button_contained__8_KFk Button_contained-primary__IViyX Button_fullWidth__Dgoqh']")).Click();
@@ -221,7 +221,7 @@ namespace Scraper.Core.Sources
                 rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Скачивание обложек тайтла"));
 
                 RemangaUploader remangaUploader = new RemangaUploader(ftpServer, conf);
-                remangaUploader.uploadCovers(title.cover);
+                remangaUploader.uploadCovers(title.covers);
 
                 rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Скачивание обложек тайтла успешно завершено"));
             }
@@ -320,7 +320,6 @@ namespace Scraper.Core.Sources
             }
             rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о тайтле {title.name} завершено успешно"));
         }
-
         
         public void getPersons()
         {
@@ -388,12 +387,12 @@ namespace Scraper.Core.Sources
                 }
 
                 if (driver.FindElements(By.XPath("//div[@class='Avatar_avatar__hG0bH Avatar_colorDefault__MHL29 Avatar_avatar__CanNK']/img")).Count() > 0)
-                    person.image = new Image(driver.FindElement(By.XPath("//div[@class='Avatar_avatar__hG0bH Avatar_colorDefault__MHL29 Avatar_avatar__CanNK']/img")).GetAttribute("src"));
+                    person.images = new List<IImage>() { new Image(driver.FindElement(By.XPath("//div[@class='Avatar_avatar__hG0bH Avatar_colorDefault__MHL29 Avatar_avatar__CanNK']/img")).GetAttribute("src")) };
                 if (person.type == PersonType.translator)
                 {
                     person.name = driver.FindElement(By.XPath("//h1[@class='Typography_h3___I3IT Typography_lineClamp-1__ijYgf Typography_lineClamp__Pa1wi Team_name__FLyYc']")).Text;
                     person.altName = driver.FindElements(By.XPath("//p[@class='Typography_body1__YTqxB Team_tagline__wIfbi']")).Count() > 0 ? driver.FindElement(By.XPath("//p[@class='Typography_body1__YTqxB Team_tagline__wIfbi']")).Text : null;
-                    person.image = new Image(driver.FindElement(By.XPath("//div[@class='Avatar_avatar__hG0bH Avatar_colorDefault__MHL29 Team_avatar__lj_mG']/img")).GetAttribute("src"));
+                    person.images = new List<IImage>() { new Image(driver.FindElement(By.XPath("//div[@class='Avatar_avatar__hG0bH Avatar_colorDefault__MHL29 Team_avatar__lj_mG']/img")).GetAttribute("src")) };
                     title.contacts = driver.FindElements(By.XPath("//a[@class='Button_button___CisL Button_button___CisL Button_text__IGNQ6 Button_text-primary__WgBRV Team_socialButton__2oZZA']")).Select(x => x.GetAttribute("href")).ToList();
                     person.description = driver.FindElements(By.XPath("//div[@class='Team_content__Tshsc']/div[@class='Team_section__CdfV4']")).Count > 0 ? driver.FindElement(By.XPath("//div[@class='Team_content__Tshsc']/div[@class='Team_section__CdfV4']")).Text : null;
                 }
@@ -408,8 +407,8 @@ namespace Scraper.Core.Sources
                     person.description = driver.FindElements(By.XPath("//div[@class='m-0.5 mb-1']/div[@class='Section_section__sLePo']/div")).Count > 0
                         ? driver.FindElement(By.XPath("//div[@class='m-0.5 mb-1']/div[@class='Section_section__sLePo']/div")).Text
                         : null;
-                    person.image = driver.FindElements(By.XPath("//div[@class='Avatar_avatar__hG0bH Avatar_colorDefault__MHL29 Avatar_avatar__CanNK']/img")).Count() > 0
-                        ? new Image(driver.FindElement(By.XPath("//div[@class='Avatar_avatar__hG0bH Avatar_colorDefault__MHL29 Avatar_avatar__CanNK']/img")).GetAttribute("src"))
+                    person.images = driver.FindElements(By.XPath("//div[@class='Avatar_avatar__hG0bH Avatar_colorDefault__MHL29 Avatar_avatar__CanNK']/img")).Count() > 0
+                        ? new List<IImage>() { new Image(driver.FindElement(By.XPath("//div[@class='Avatar_avatar__hG0bH Avatar_colorDefault__MHL29 Avatar_avatar__CanNK']/img")).GetAttribute("src")) }
                         : null;
                 }
             }
@@ -467,6 +466,7 @@ namespace Scraper.Core.Sources
                     var _title = new ResponseDTO(
                         new TitleDTO("", new List<ChapterDTO>() { new ChapterDTO(
                             chapter.GetAttribute("href"),
+                            "",
                             Regex.Matches(chapter.FindElement(By.XPath(".//p[@class='Typography_body1__YTqxB Typography_color-inherit__Wstd_ Chapters_title__ocJer']")).Text, @"Глава\s*(\d+)\s*•?")[0].Groups[1].Value,
                             chapter.FindElement(By.XPath(".//div[@class='flex']/p")).Text,
                             null,
@@ -536,7 +536,7 @@ namespace Scraper.Core.Sources
                 chapter.translator.name = translatorJson.content.name;
                 chapter.translator.description = translatorJson.content.description;
                 chapter.translator.type = PersonType.translator;
-                chapter.translator.image = new Image($"{conf.scraperConfiguration.baseUrl}{translatorJson.content.img.high}");
+                chapter.translator.images = new List<IImage>() { new Image($"{conf.scraperConfiguration.baseUrl}{translatorJson.content.img.high}") };
 
                 string jpg = "", jpeg = "", png = "", webp = "";
 
@@ -596,6 +596,7 @@ namespace Scraper.Core.Sources
                         new List<ChapterDTO>() {
                             new ChapterDTO(null,
                                 chapter.number,
+                                "",
                                 chapter.translator.name,
                                 title.name,
                                 chapter.Equals(title.chapters.First()) ? true : false,

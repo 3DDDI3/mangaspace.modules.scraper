@@ -20,6 +20,7 @@ using RussianTransliteration;
 using Scraper.Core.Json.Mangaovh;
 using System.Xml.Linq;
 using Scraper.Core.Json.Remanga;
+using System.Diagnostics;
 
 namespace Scraper.Core.Sources
 {
@@ -30,6 +31,7 @@ namespace Scraper.Core.Sources
         private Configuration conf;
         private ILogger logger;
         private Server externalServer;
+        private Server externalServerAlt;
         private MangalibJson.Title _title;
 
         public string baseUrl { get; set; }
@@ -45,6 +47,7 @@ namespace Scraper.Core.Sources
             this.conf = conf;
             server = new Server(conf, logger, rmq);
             externalServer = new Server("https://api2.mangalib.me/api/manga");
+            externalServerAlt = new Server("https://api.lib.social/api/manga");
 
             title = new Classes.General.Title()
             {
@@ -85,28 +88,27 @@ namespace Scraper.Core.Sources
         {
             getPages();
 
-            foreach (var url in driver.FindElements(By.XPath("//a[@class='media-card']")).Select(x => x.GetAttribute("href")))
+            List<KeyValuePair<string, string>> args = new List<KeyValuePair<string, string>>()
             {
-                driver.Navigate().GoToUrl(url);
+                new KeyValuePair<string, string>("site_id[]", "1")
+            };
 
+            externalServerAlt.externalExecute($"/", Method.Get, args);
+            var urls = JsonConvert.DeserializeObject<dynamic>(Regex.Replace(externalServerAlt.response.Content, @"(^{""data"":)|(,?((""meta"")|(""links"")):{""?[\w0-9\\\/.\:\?\=\,""]+""?},?}?)", ""));
 
-                /**
-                 * Нажатие кнопки показать все
-                 */
-                if (driver.FindElements(By.XPath("//div[@class='media-info-list__expand']")).Count > 0)
-                    driver.FindElement(By.XPath("//div[@class='media-info-list__expand']")).Click();
-
-                getPersons();
+            foreach (var url in urls)
+            {
+                driver.Navigate().GoToUrl($"{conf.scraperConfiguration.baseUrl}/manga/{url.slug}");
                 getTitleInfo();
                 getChapters();
-
+                getImages();
                 break;
             }
         }
-
+             
         public void getTitleInfo()
         {
-            var url = rmq.rmqMessage.RequestDTO.titleDTO.chapterDTO[0].url.Split("/")[0];
+            var url = driver.Url.Split("/")[driver.Url.Split("/").Length - 1];
 
             rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о тайтле по ссылке {url} начато"));
 
@@ -178,8 +180,6 @@ namespace Scraper.Core.Sources
                     break;
             }
 
-            getPersons();
-
             title.releaseYear = ushort.Parse(_title.releaseDate);
 
             foreach (var genre in _title.genres)
@@ -206,14 +206,14 @@ namespace Scraper.Core.Sources
 
             MangalibJson.Covers[] covers = JsonConvert.DeserializeObject<MangalibJson.Covers[]>(Regex.Replace(externalServer.response.Content, @"(^{""data"":)|(}$)", ""));
 
-            title.cover = new List<IImage>();
+            title.covers = new List<IImage>();
 
             foreach (var cover in covers)
             {
-                title.cover.Add(new Image(cover.cover.md));
+                title.covers.Add(new Image(cover.cover.orig));
             }
 
-            ftpServer.rootPath = @$"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\";
+            ftpServer.rootPath = @$"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\titles\";
             if (!Directory.Exists($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
                 Directory.CreateDirectory($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
 
@@ -221,8 +221,26 @@ namespace Scraper.Core.Sources
 
             if (!Directory.Exists(@$"{ftpServer.rootPath}\covers"))
                 Directory.CreateDirectory(@$"{ftpServer.rootPath}\covers");
-            //ftpServer.rootPath = $"{ftpServer.rootPath}{title.altName}/";
+
             ftpServer.connect();
+
+            MangalibUploader uploader = new MangalibUploader(ftpServer, conf);
+            uploader.uploadCovers(title.covers);
+
+            server.execute("v1.0/titles", title, Method.Post);
+            
+            args = new List<KeyValuePair<string, string>>()
+            {
+                new KeyValuePair<string, string>("eng_name", title.altName),
+                new KeyValuePair<string, string>("ru_name",title.name)
+            };
+           
+            server.execute("v1.0/titles", Method.Get, args);
+            var createdTitle = JsonConvert.DeserializeObject<dynamic>(server.response.Content);
+
+            server.execute($"v1.0/titles/{createdTitle.slug}/genres", title, Method.Post);
+
+            getPersons();
         }
 
         public void getPersons()
@@ -233,7 +251,8 @@ namespace Scraper.Core.Sources
                 {
                     name = person.name,
                     type = PersonType.author,
-                    image = new Image(person.cover.md)
+                    images = new List<IImage>() { new Image(person.cover.orig) },
+                    altName = RussianTransliterator.GetTransliteration(person.name)
                 });
             }
 
@@ -243,7 +262,8 @@ namespace Scraper.Core.Sources
                 {
                     name = person.name,
                     type = PersonType.publishing,
-                    image = new Image(person.cover.md)
+                    images = new List<IImage>() { new Image(person.cover.orig) },
+                    altName = RussianTransliterator.GetTransliteration(person.name)
                 });
             }
 
@@ -254,9 +274,24 @@ namespace Scraper.Core.Sources
                 {
                     name = person.name,
                     type = PersonType.painter,
-                    image = new Image(person.cover.md)
+                    images = new List<IImage>() { new Image(person.cover.orig) },
+                    altName = RussianTransliterator.GetTransliteration(person.name)
                 });
             }
+
+            List<KeyValuePair<string, string>> args = new List<KeyValuePair<string, string>>()
+            {
+                new KeyValuePair<string, string>("eng_name", title.altName),
+                new KeyValuePair<string, string>("ru_name",title.name)
+            };
+
+            ftpServer.rootPath = @"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\";
+            MangalibUploader uploader = new MangalibUploader(ftpServer, conf);
+            uploader.uploadPersonalImages(title.persons);
+
+            server.execute("v1.0/titles", Method.Get, args);
+            var createdTitle = JsonConvert.DeserializeObject<dynamic>(server.response.Content);
+            server.execute($"v1.0/titles/{createdTitle.slug}/persons", title.persons, Method.Post);
         }
 
         public void getChapters()
@@ -265,15 +300,15 @@ namespace Scraper.Core.Sources
 
             if (rmq.rmqMessage.RequestDTO.scraperDTO.action == "parseChapters")
             {
+                driver.Navigate().GoToUrl($"https://mangalib.me/{url}");
+                
                 getTitleInfo();
 
-                server.execute("v1.0/titles", title, Method.Post);
-
-                List<List<IImage>> images = new List<List<IImage>>();
                 foreach (var chapter in rmq.rmqMessage.RequestDTO.titleDTO.chapterDTO)
                 {
                     externalServer.externalExecute(chapter.url, Method.Get);
                     MangalibJson.Chapter _chapter = JsonConvert.DeserializeObject<MangalibJson.Chapter>(Regex.Replace(externalServer.response.Content, @"(""data"":)|(^{)|(}$)", ""));
+                    List<List<IImage>> images = new List<List<IImage>>();
 
                     foreach (var image in _chapter.pages)
                     {
@@ -287,7 +322,7 @@ namespace Scraper.Core.Sources
                         name = _chapter.name,
                         number = _chapter.number,
                         volume = _chapter.volume.ToString(),
-                        translator = new Person() { name = _chapter.teams.First().name, image = new Image(_chapter.teams.First().cover.md), type = PersonType.translator }
+                        translator = new Person() { name = _chapter.teams.First().name, images = new List<IImage>() { new Image(_chapter.teams.First().cover.orig) }, type = PersonType.translator, altName = RussianTransliterator.GetTransliteration(title.name)}
                     });
                 }
             }
@@ -296,14 +331,13 @@ namespace Scraper.Core.Sources
                 externalServer.externalExecute($"/{url}/chapters", RestSharp.Method.Get);
 
                 MangalibJson.Chapters[] chapters = JsonConvert.DeserializeObject<MangalibJson.Chapters[]>(Regex.Replace(externalServer.response.Content, @"(""data"":)|(^{)|(}$)", ""));
-                chapters = chapters.Take(5).ToArray();
-
-                List<List<IImage>> images = new List<List<IImage>>();
+                chapters = chapters.Take(5).ToArray();                   
 
                 foreach (var chapter in chapters)
                 {
                     foreach (var branch in chapter.branches)
                     {
+                        List<List<IImage>> images = new List<List<IImage>>();
                         externalServer.externalExecute($"/{url}/chapter", Method.Get,
                             new List<KeyValuePair<string, string>>() {
                             new KeyValuePair<string, string>("branch_id", branch.branch_id.ToString()),
@@ -314,12 +348,13 @@ namespace Scraper.Core.Sources
 
                         _chapter = JsonConvert.DeserializeObject<MangalibJson.Chapter>(Regex.Replace(externalServer.response.Content, @"(""data"":)|(^{)|(}$)", ""));
 
-                        List<IImage> _images = new List<IImage>();
+                        List<IImage> _images = null;
                         foreach (var image in _chapter.pages)
                         {
-                            _images.Add(new Image($"https://img33.imgslib.link{image.url}"));
+                            _images = new List<IImage>() { new Image($"https://img33.imgslib.link{image.url}") };
+                            images.Add(_images);
                         }
-                        images.Add(_images);
+
 
                         title.chapters.Add(new Chapter()
                         {
@@ -327,70 +362,59 @@ namespace Scraper.Core.Sources
                             name = chapter.name,
                             number = chapter.number,
                             volume = chapter.volume.ToString(),
-                            translator = new Person() { name = _chapter.teams.First().name, image = new Image(_chapter.teams.First().cover.md), type = PersonType.translator }
+                            translator = new Person()
+                            {
+                                name = _chapter.teams.First().name,
+                                altName = RussianTransliterator.GetTransliteration(_chapter.teams.First().name),
+                                images = new List<IImage>() { new Image(_chapter.teams.First().cover.md) },
+                                type = PersonType.translator
+                            }
                         });
-
-                        var _title = new ResponseDTO(
-                            new TitleDTO("", new List<ChapterDTO>() { new ChapterDTO(
-                                $"{url}/chapter?branch_id={branch.branch_id}&volume={chapter.volume}&number={chapter.number}",
-                                chapter.number,
-                                _chapter.teams.First().name,
-                                chapter.name,
-                                chapter.Equals(chapters.First()) && branch.Equals(chapter.branches.First())?true:false,
-                                //title.chapters.Count==10?true:false
-                                chapter.Equals(chapters.Last()) && branch.Equals(chapter.branches.Last())?true:false
-                                )
-                               }),
-                            new ScraperDTO("", "")
-                        );
-
-                        rmq.send("scraper", "getChapterResponse", _title);
+                        
                         Thread.Sleep(500);
 
                     }
-
-                    //if (title.chapters.Count > 10)
-                    //    break;
-
                 }
-            }
-                      
+            }        
         }
-
-           
 
         /// <summary>
         /// TODO Реализовать скачивание изображений
         /// </summary>
         public void getImages()
-        {
-            ftpServer.rootPath = @$"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\";
-            if (!Directory.Exists($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
-                Directory.CreateDirectory($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
-
-            ftpServer.rootPath += @$"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}\";
-
-            if (!Directory.Exists(@$"{ftpServer.rootPath}\covers"))
-                Directory.CreateDirectory(@$"{ftpServer.rootPath}\covers");
-
+        { 
             MangalibUploader uploader = new MangalibUploader(ftpServer, conf);
+
+            List<KeyValuePair<string, string>> args = new List<KeyValuePair<string, string>>()
+            {
+                new KeyValuePair<string, string>("eng_name", title.altName),
+                new KeyValuePair<string, string>("ru_name",title.name)
+            };
+
+            server.execute("v1.0/titles", Method.Get, args);
+            var createdTitle = JsonConvert.DeserializeObject<dynamic>(server.response.Content);
+            server.execute($"v1.0/titles/{createdTitle.slug}/covers", title.covers, Method.Post);
 
             foreach (var chapter in title.chapters)
             {
-                rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о главе {chapter.number} начато"));
+                ftpServer.rootPath = @$"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\";
+                rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Скачивание изображений {chapter.number}-ой главы начато"));
+                uploader.uploadPersonalImages(new List<IPerson>() { chapter.translator });
+                ftpServer.rootPath = @$"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\titles\";
+                ftpServer.rootPath += @$"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}\";
                 uploader.uploadChapterImages(chapter);
+                rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Скачивание изображений {chapter.number}-ой главы завершено"));
 
-                List<KeyValuePair<string, string>> args = new List<KeyValuePair<string, string>>()
+                try
                 {
-                    new KeyValuePair<string, string>("eng_name", title.altName),
-                    new KeyValuePair<string, string>("ru_name",title.name)
-                };
-
-                server.execute("v1.0/titles", Method.Get, args);
-                var createdTitle = JsonConvert.DeserializeObject<Classes.General.Title>(server.response.Content);
-
-                server.execute($"v1.0/titles/{createdTitle.slug}/chapters", chapter, Method.Post);
-                server.execute($"v1.0/titles/{createdTitle.slug}/chapters/{chapter.number}/images", chapter, Method.Post);
+                    server.execute($"v1.0/titles/{createdTitle.slug}/persons", new List<IPerson>() { chapter.translator }, Method.Post);
+                    server.execute($"v1.0/titles/{createdTitle.slug}/chapters", chapter, Method.Post);
+                    server.execute($"v1.0/titles/{createdTitle.slug}/chapters/{chapter.number}/images", chapter, Method.Post);
+                }
+                catch (Exception ex)
+                {
+                    rmq.send("information", "errorLog", new LogDTO(ex.Message));
+                }
 
                 chapter.images = new List<List<IImage>>();
 
@@ -402,6 +426,7 @@ namespace Scraper.Core.Sources
                        new List<ChapterDTO>() {
                             new ChapterDTO(null,
                                 chapter.number,
+                                "",
                                 chapter.translator.name,
                                 title.name,
                                 chapter.Equals(title.chapters.First()) ? true : false,
@@ -415,11 +440,29 @@ namespace Scraper.Core.Sources
                        rmq.rmqMessage.RequestDTO.scraperDTO.engine
                    )
                 );
-                rmq.send("scraper", "parseChapterResponse", responseDTO);
+
+                string queue = string.Empty;
+
+                switch (rmq.rmqMessage.RequestDTO.scraperDTO.action)
+                {
+                    case "parseTitles":
+                        queue = "parseTitleResponse";
+                        break;
+
+                    case "getChapters":
+                        queue = "getChapterResponse";
+                        break;
+
+                    case "parseChapters":
+                        queue = "parseChapterResponse";
+                        break;
+                }
+
+                rmq.send("scraper", queue, responseDTO);
 
                 rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о главе {chapter.number} завершено успешно"));
             }
-        }
+        }                                              
 
         public void getAllChapters()
         {
@@ -433,6 +476,9 @@ namespace Scraper.Core.Sources
         {
             getChapters();
             getImages();
+            driver.Quit();
         }
+
+
     }
 }

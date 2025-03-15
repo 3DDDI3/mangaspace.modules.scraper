@@ -156,5 +156,34 @@ namespace Scraper.Core.Classes.Uploader
                 }
             }
         }
+
+        public void uploadPersonalImages(List<IPerson> persons)
+        {
+            foreach (var person in persons)
+            {
+                if (!conf.appConfiguration.production)
+                {
+                    //else path += @$"{}\";
+
+                    //if (!Directory.Exists($"{server.rootPath}{chapter.number}") && String.IsNullOrEmpty(chapter.volume))
+                    //{
+                    //    Directory.CreateDirectory($"{server.rootPath}{chapter.number}");
+                    //    path += @$"{chapter.number}\";
+                    //}
+                    //else
+                    //{
+                    //    Directory.CreateDirectory(@$"{server.rootPath}\{chapter.volume}\{chapter.number}");
+                    //    path += @$"{chapter.volume}\{chapter.number}\";
+                    //}
+
+                    //chapter.url = $"{server.rootPath.Replace(@"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\", "")}{path}";
+                }
+            }
+        }
+
+        public void uploadPersonalImages()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

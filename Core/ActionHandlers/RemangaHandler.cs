@@ -10,8 +10,9 @@ namespace Scraper.Core.ActionHandlers
 {
     public class RemangaHandler : IActionHandler
     {
-        public void Handle(Configuration conf, RMQ rmq, ILogger logger)
+        public void Handle(Configuration conf, IConfiguration configuration, RMQ rmq, ILogger logger)
         {
+            conf.scraperConfiguration = configuration.GetSection("remanga").Get<ScraperConfiguration>();
             var remanga = new Remanga(conf, rmq, logger);
             var messageHandler = new MessageHandler<Remanga>(remanga);
             messageHandler.HandleMessage(rmq.rmqMessage.RequestDTO.scraperDTO.action);

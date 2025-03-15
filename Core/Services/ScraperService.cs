@@ -19,6 +19,7 @@ namespace Scraper.Core.Services
     {
         private readonly ILogger<ScraperService> _logger;
         private readonly Configuration _conf;
+        private readonly IConfiguration conf;
         private readonly RMQ _rmq;
         private CancellationTokenSource _cancellationTokenSource;
         private readonly IServiceProvider _serviceProvider;
@@ -27,6 +28,7 @@ namespace Scraper.Core.Services
         public ScraperService(ILogger<ScraperService> logger, IConfiguration conf, ActionHandlerFactory actionHandlerFactory)
         {
             _logger = logger;
+            this.conf = conf;
             _cancellationTokenSource = new CancellationTokenSource();
             _actionHandlerFactory = actionHandlerFactory;
 
@@ -62,7 +64,7 @@ namespace Scraper.Core.Services
                 _rmq.rmqMessage = new RMQMessage(ea);
 
                 _logger.LogInformation($"Получено задание {_rmq.rmqMessage.jobId} с сообщением: {Encoding.UTF8.GetString(ea.Body.ToArray())}");
-                _actionHandlerFactory.GetHandler(_rmq.rmqMessage.RequestDTO.scraperDTO.engine).Handle(_conf, _rmq, _logger);
+                _actionHandlerFactory.GetHandler(_rmq.rmqMessage.RequestDTO.scraperDTO.engine).Handle(_conf, conf, _rmq, _logger);
                 _rmq.channel.BasicAck(ea.DeliveryTag, true);
             };
 

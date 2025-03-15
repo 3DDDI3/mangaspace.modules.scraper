@@ -8,7 +8,7 @@ namespace Scraper.Core.Classes.General
         public string name { get; set; }
         public PersonType type { get; set; }
         public string description { get; set; }
-        public IImage image { get; set; }
+        public List<IImage> images { get; set; }
         public string altName { get; set; }
         public string url { get; set; }
     }

@@ -9,6 +9,6 @@ namespace Scraper.Core.Interfaces
         public string url { get; set; }
         public PersonType type { get; set; }
         public string? description { get; set; }
-        public IImage? image { get; set; }
+        public List<IImage>? images { get; set; }
     }
 }

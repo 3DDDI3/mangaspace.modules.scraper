@@ -15,11 +15,11 @@ namespace Scraper.Core.ActionHandlers
             _actionHandlerFactory = actionHandlerFactory;
         }
 
-        public void ExecuteAction(string actionName, Configuration conf, RMQ rmq, ILogger logger)
+        public void ExecuteAction(string actionName, Configuration conf, IConfiguration configuration, RMQ rmq, ILogger logger)
         {
             var handler = _actionHandlerFactory.GetHandler(actionName);
 
-            handler.Handle(conf, rmq, logger);
+            handler.Handle(conf, configuration, rmq, logger);
         }
     }
 }

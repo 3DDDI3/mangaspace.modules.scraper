@@ -14,8 +14,8 @@
     "pages": "?page="
   },
   "mangalib": {
-    "baseUrl": "https://mangalib.me/",
-    "catalogUrl": "manga-list",
+    "baseUrl": "https://mangalib.me/ru",
+    "catalogUrl": "catalog",
     "pages": "?page="
   },
   "mangaovh": {
