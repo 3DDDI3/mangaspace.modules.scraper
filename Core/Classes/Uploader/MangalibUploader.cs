@@ -154,10 +154,10 @@ namespace Scraper.Core.Classes.Uploader
 
         public void uploadPersonalImages(List<IPerson> persons) {
             string path = string.Empty;
-            if (!Directory.Exists(@$"{server.rootPath}persons")){
+            if (!Directory.Exists(@$"{server.rootPath}persons"))
                 Directory.CreateDirectory(@$"{server.rootPath}persons");
-                server.rootPath = @$"{server.rootPath}persons\";
-            }
+
+            server.rootPath = @$"{server.rootPath}persons\";
 
             foreach (var person in persons)
             {
@@ -189,7 +189,7 @@ namespace Scraper.Core.Classes.Uploader
                                 {
                                     outgoingStream.Seek(0, SeekOrigin.Begin);
                                     outgoingStream.CopyTo(fileStream);
-                                    person.images[i].path = @$"{server.rootPath.Replace(@"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\", "")}{i+1}";
+                                    person.images[i].path = @$"{server.rootPath.Replace(@"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\persons\", "")}{i+1}";
                                     person.images[i].extension = "webp";
                                 }
                         }

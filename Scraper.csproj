@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Core\Новая папка\**" />
+    <EmbeddedResource Remove="Core\Новая папка\**" />
+    <None Remove="Core\Новая папка\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentFTP" Version="51.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -23,10 +29,6 @@
     <None Update="settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Core\Новая папка\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties settings_1json__JsonSchema=" &quot;token&quot;: &quot;asdasd&quot;" /></VisualStudio></ProjectExtensions>
