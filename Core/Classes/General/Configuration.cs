@@ -26,7 +26,9 @@
     {
         public string name { get; set; }
         public string version { get; set; }
-        public bool production {  get; set; }
+        public bool production { get; set; }
+        public string local_root { get; set; }
+        public string prod_root { get; set; }
     }
 
     public class ServerConfiguration

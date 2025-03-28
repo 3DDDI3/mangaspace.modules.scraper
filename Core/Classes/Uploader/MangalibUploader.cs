@@ -52,7 +52,7 @@ namespace Scraper.Core.Classes.Uploader
                     path += @$"{chapter.volume}\{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}\";
                 }
 
-                chapter.url = $"{server.rootPath.Replace(@"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\", "")}{path}";
+                chapter.url = $"{server.rootPath.Replace(conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root, "")}{path}";
             }
             else
             {
@@ -88,6 +88,8 @@ namespace Scraper.Core.Classes.Uploader
                 {
                     using (HttpClient httpClient = new HttpClient())
                     {
+                        httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+                        httpClient.DefaultRequestHeaders.Add("Referer", "https://mangalib.me"); // Пример добавления токена 
                         try
                         {
                             incomingStream = httpClient.GetStreamAsync($"{chapter.images[i][j].path}.{chapter.images[i][j].extension}").Result;
@@ -136,11 +138,11 @@ namespace Scraper.Core.Classes.Uploader
                         if (conf.appConfiguration.production)
                             server.client.UploadStream(outgoingStream, $"{server.rootPath}{i + 1}.webp");
                         else
-                            using (FileStream fileStream = new FileStream(@$"{server.rootPath}\covers\{i + 1}.webp", FileMode.Create, FileAccess.Write))
+                            using (FileStream fileStream = new FileStream(@$"{server.rootPath}covers\{i + 1}.webp", FileMode.Create, FileAccess.Write))
                             {
                                 outgoingStream.Seek(0, SeekOrigin.Begin);
                                 outgoingStream.CopyTo(fileStream);
-                                images[i].path = @$"{server.rootPath.Replace(@"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\", "")}\covers\{i + 1}";
+                                images[i].path = @$"{server.rootPath.Replace(conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root, "")}\covers\{i + 1}";
                                 images[i].extension = "webp";
                             }
                     }
@@ -189,7 +191,7 @@ namespace Scraper.Core.Classes.Uploader
                                 {
                                     outgoingStream.Seek(0, SeekOrigin.Begin);
                                     outgoingStream.CopyTo(fileStream);
-                                    person.images[i].path = @$"{server.rootPath.Replace(@"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\persons\", "")}{i+1}";
+                                    person.images[i].path = $"persons/{person.altName}/{i + 1}";
                                     person.images[i].extension = "webp";
                                 }
                         }

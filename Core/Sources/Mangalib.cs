@@ -138,6 +138,7 @@ namespace Scraper.Core.Sources
             title.description = _title.summary;
             title.type = _title.type.label;
 
+
             switch (_title.scanlateStatus.label)
             {
                 case "Продолжается":
@@ -213,7 +214,13 @@ namespace Scraper.Core.Sources
                 title.covers.Add(new Image(cover.cover.orig));
             }
 
-            ftpServer.rootPath = @$"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\titles\";
+            ftpServer.rootPath = conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root;
+
+            if (!Directory.Exists(@$"{ftpServer.rootPath}titles"))
+                Directory.CreateDirectory(@$"{ftpServer.rootPath}titles");
+
+            ftpServer.rootPath = @$"{ftpServer.rootPath}titles\";
+
             if (!Directory.Exists($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
                 Directory.CreateDirectory($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
 
@@ -227,6 +234,8 @@ namespace Scraper.Core.Sources
             MangalibUploader uploader = new MangalibUploader(ftpServer, conf);
             uploader.uploadCovers(title.covers);
 
+            title.path = $@"titles\{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}";
+
             server.execute("v1.0/titles", title, Method.Post);
             
             args = new List<KeyValuePair<string, string>>()
@@ -236,7 +245,7 @@ namespace Scraper.Core.Sources
             };
            
             server.execute("v1.0/titles", Method.Get, args);
-            var createdTitle = JsonConvert.DeserializeObject<dynamic>(server.response.Content);
+            var createdTitle = JsonConvert.DeserializeObject<dynamic>(Regex.Replace(server.response.Content, @"(^{""data"":\[)|(\]?,?((""meta"")|(""links"")):{""?[\w0-9\\\/.\:\?\=\,""\[\]\{\}\&\;\s]+""?\}?)", ""));
 
             server.execute($"v1.0/titles/{createdTitle.slug}/genres", title, Method.Post);
 
@@ -285,12 +294,12 @@ namespace Scraper.Core.Sources
                 new KeyValuePair<string, string>("ru_name",title.name)
             };
 
-            ftpServer.rootPath = @"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\";
+            ftpServer.rootPath = conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root;
             MangalibUploader uploader = new MangalibUploader(ftpServer, conf);
             uploader.uploadPersonalImages(title.persons);
 
             server.execute("v1.0/titles", Method.Get, args);
-            var createdTitle = JsonConvert.DeserializeObject<dynamic>(server.response.Content);
+            var createdTitle = JsonConvert.DeserializeObject<dynamic>(Regex.Replace(server.response.Content, @"(^{""data"":\[)|(\]?,?((""meta"")|(""links"")):{""?[\w0-9\\\/.\:\?\=\,""\[\]\{\}\&\;\s]+""?\}?)", ""));
             server.execute($"v1.0/titles/{createdTitle.slug}/persons", title.persons, Method.Post);
         }
 
@@ -392,15 +401,15 @@ namespace Scraper.Core.Sources
             };
 
             server.execute("v1.0/titles", Method.Get, args);
-            var createdTitle = JsonConvert.DeserializeObject<dynamic>(server.response.Content);
+            var createdTitle = JsonConvert.DeserializeObject<dynamic>(Regex.Replace(server.response.Content, @"(^{""data"":\[)|(\]?,?((""meta"")|(""links"")):{""?[\w0-9\\\/.\:\?\=\,""\[\]\{\}\&\;\s]+""?\}?)", ""));
             server.execute($"v1.0/titles/{createdTitle.slug}/covers", title.covers, Method.Post);
 
             foreach (var chapter in title.chapters)
             {
-                ftpServer.rootPath = @$"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\";
+                ftpServer.rootPath = conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root;
                 rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Скачивание изображений {chapter.number}-ой главы начато"));
                 uploader.uploadPersonalImages(new List<IPerson>() { chapter.translator });
-                ftpServer.rootPath = @$"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\titles\";
+                ftpServer.rootPath = conf.appConfiguration.production ? $@"{conf.appConfiguration.prod_root}titles\" : @$"{conf.appConfiguration.local_root}titles\";
                 ftpServer.rootPath += @$"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}\";
                 uploader.uploadChapterImages(chapter);
                 rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Скачивание изображений {chapter.number}-ой главы завершено"));
@@ -418,9 +427,6 @@ namespace Scraper.Core.Sources
 
                 chapter.images = new List<List<IImage>>();
 
-                /*
-                 * @TODO подкорректировать отправку сообщения в RMQ
-                 */
                 ResponseDTO responseDTO = new ResponseDTO(
                    new TitleDTO("",
                        new List<ChapterDTO>() {
