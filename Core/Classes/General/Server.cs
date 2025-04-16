@@ -69,7 +69,7 @@ namespace Scraper.Core.Classes.General
                 foreach (var arg in args)
                 {
                     request.AddParameter(arg.Key, arg.Value);
-                }
+                } 
 
             request.AddHeaders(new Dictionary<string, string>()
             {

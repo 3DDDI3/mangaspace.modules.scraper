@@ -5,6 +5,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.Processing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Configuration = Scraper.Core.Classes.General.Configuration;
 
@@ -31,24 +32,16 @@ namespace Scraper.Core.Classes.Uploader
 
             if (!conf.appConfiguration.production)
             {
-                //if (!String.IsNullOrEmpty(chapter.volume))
-                //{
-                //    if (!Directory.Exists($"{server.rootPath}{chapter.volume}"))
-                //    {
-                //        Directory.CreateDirectory($"{server.rootPath}{chapter.volume}");
-                //        path += @$"{chapter.volume}\";
-                //    } 
-                //}
-                //else path += @$"{chapter.volume}\";
+                CustomDirectory directory = new CustomDirectory(server.rootPath);
 
                 if (!Directory.Exists(@$"{server.rootPath}{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}") && String.IsNullOrEmpty(chapter.volume))
                 {
-                    Directory.CreateDirectory(@$"{server.rootPath}{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}");
+                    directory.createDirectory($@"{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}");
                     path += @$"{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}\";
                 }    
                 else
                 {
-                    Directory.CreateDirectory(@$"{server.rootPath}\{chapter.volume}\{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}");
+                    directory.createDirectory(@$"{chapter.volume}\{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}");
                     path += @$"{chapter.volume}\{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}\";
                 }
 
@@ -84,7 +77,7 @@ namespace Scraper.Core.Classes.Uploader
 
             for (int i = 0; i < chapter.images.Count; i++)
             {
-                for(int j=0; j< chapter.images[i].Count; j++) 
+                for (int j = 0; j < chapter.images[i].Count; j++)
                 {
                     using (HttpClient httpClient = new HttpClient())
                     {
@@ -155,18 +148,17 @@ namespace Scraper.Core.Classes.Uploader
         }
 
         public void uploadPersonalImages(List<IPerson> persons) {
-            string path = string.Empty;
-            if (!Directory.Exists(@$"{server.rootPath}persons"))
-                Directory.CreateDirectory(@$"{server.rootPath}persons");
+            string path = conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root;
 
-            server.rootPath = @$"{server.rootPath}persons\";
+            CustomDirectory directory = new CustomDirectory(path);
+            path += @"persons\";
 
             foreach (var person in persons)
             {
-                if (!Directory.Exists(@$"{server.rootPath}{person.altName}"))
+                if (!Directory.Exists(@$"{path}{person.altName}"))
                 {
-                    Directory.CreateDirectory(@$"{server.rootPath}{person.altName}");
-                    server.rootPath = @$"{server.rootPath}{person.altName}\";
+                    directory.createDirectory(@$"persons\{person.altName}");
+                    path = @$"{path}{person.altName}\";
                 }
 
                 for (int i = 0; i < person.images.Count(); i++)
@@ -187,7 +179,7 @@ namespace Scraper.Core.Classes.Uploader
                             if (conf.appConfiguration.production)
                                 server.client.UploadStream(outgoingStream, $"{server.rootPath}{i + 1}.webp");
                             else
-                                using (FileStream fileStream = new FileStream(@$"{server.rootPath}{i + 1}.webp", FileMode.Create, FileAccess.Write))
+                                using (FileStream fileStream = new FileStream(@$"{path}\{i + 1}.webp", FileMode.Create, FileAccess.Write))
                                 {
                                     outgoingStream.Seek(0, SeekOrigin.Begin);
                                     outgoingStream.CopyTo(fileStream);
@@ -201,7 +193,7 @@ namespace Scraper.Core.Classes.Uploader
                         }
                     }
                 }
-                server.rootPath = server.rootPath.Replace($@"{person.altName}\", "");
+                path = path.Replace($@"{person.altName}\", "");
             }
         }
     }

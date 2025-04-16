@@ -215,16 +215,17 @@ namespace Scraper.Core.Sources
             }
 
             ftpServer.rootPath = conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root;
+            CustomDirectory directory = new CustomDirectory(ftpServer.rootPath);
 
             if (!Directory.Exists(@$"{ftpServer.rootPath}titles"))
-                Directory.CreateDirectory(@$"{ftpServer.rootPath}titles");
+                directory.createDirectory("titles");
 
-            ftpServer.rootPath = @$"{ftpServer.rootPath}titles\";
+            var path = @$"titles\";
 
             if (!Directory.Exists($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
-                Directory.CreateDirectory($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
+                directory.createDirectory($@"{path}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
 
-            ftpServer.rootPath += @$"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}\";
+            path += @$"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}\";
 
             if (!Directory.Exists(@$"{ftpServer.rootPath}\covers"))
                 Directory.CreateDirectory(@$"{ftpServer.rootPath}\covers");
@@ -301,6 +302,7 @@ namespace Scraper.Core.Sources
             server.execute("v1.0/titles", Method.Get, args);
             var createdTitle = JsonConvert.DeserializeObject<dynamic>(Regex.Replace(server.response.Content, @"(^{""data"":\[)|(\]?,?((""meta"")|(""links"")):{""?[\w0-9\\\/.\:\?\=\,""\[\]\{\}\&\;\s]+""?\}?)", ""));
             server.execute($"v1.0/titles/{createdTitle.slug}/persons", title.persons, Method.Post);
+
         }
 
         public void getChapters()
