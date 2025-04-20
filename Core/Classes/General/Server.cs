@@ -37,21 +37,28 @@ namespace Scraper.Core.Classes.General
         /// <param name="method"></param>
         public void execute(string resource, object obj, Method method)
         {
-            request = new RestRequest(resource, method);
+            try
+            {
+                request = new RestRequest(resource, method);
 
-            request.AddHeaders(new Dictionary<string, string>()
+                request.AddHeaders(new Dictionary<string, string>()
+                {
+                    ["Accept"] = "application/json",
+                    ["Authorization"] = $"Bearer {conf.apiConfiguration.token}",
+                    ["User-Agent"] = $"{conf.appConfiguration.name}/{conf.appConfiguration.version} ({RuntimeInformation.OSDescription};{RuntimeInformation.OSArchitecture};{RuntimeInformation.FrameworkDescription}) lang=ru-RU",
+                });
+                request.AddJsonBody(JsonConvert.SerializeObject(obj));
+                response = client.Execute(request);
+                if (!response.IsSuccessful)
+                {
+                    JObject jObj = JObject.Parse(response.Content);
+                    logger.LogError($"Ошибка при выполнении запроса {conf.apiConfiguration.baseUrl}/{resource}: {jObj["message"].ToString()}");
+                    rmq.send("information", "errorLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Ошибка при попытке выполнения запроса {conf.apiConfiguration.baseUrl}/{resource}: {jObj["message"].ToString()}", false));
+                }
+            }
+            catch (Exception ex)
             {
-                ["Accept"] = "application/json",
-                ["Authorization"] = $"Bearer {conf.apiConfiguration.token}",
-                ["User-Agent"] = $"{conf.appConfiguration.name}/{conf.appConfiguration.version} ({RuntimeInformation.OSDescription};{RuntimeInformation.OSArchitecture};{RuntimeInformation.FrameworkDescription}) lang=ru-RU",
-            });
-            request.AddJsonBody(JsonConvert.SerializeObject(obj));
-            response = client.Execute(request);
-            if (!response.IsSuccessful)
-            {
-                JObject jObj = JObject.Parse(response.Content);
-                logger.LogError($"Ошибка при выполнении запроса {conf.apiConfiguration.baseUrl}/{resource}: {jObj["message"].ToString()}");
-                rmq.send("information", "errorLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Ошибка при попытке выполнения запроса {conf.apiConfiguration.baseUrl}/{resource}: {jObj["message"].ToString()}", false));
+                logger.LogError($"{ex.Message}\n {ex.InnerException}\n {ex.StackTrace}");
             }
         }
 

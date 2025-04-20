@@ -21,6 +21,7 @@ using Scraper.Core.Json.Mangaovh;
 using System.Xml.Linq;
 using Scraper.Core.Json.Remanga;
 using System.Diagnostics;
+using Microsoft.Extensions.Options;
 
 namespace Scraper.Core.Sources
 {
@@ -76,7 +77,18 @@ namespace Scraper.Core.Sources
         private void stardDriver(EdgeOptions edgeOptions = null)
         {
             edgeOptions = edgeOptions ?? new EdgeOptions();
-            driver = new EdgeDriver(edgeOptions);
+
+            if (conf.appConfiguration.production)
+            {
+                edgeOptions.AddArguments("--no-sandbox", "--disable-dev-shm-usage", "--headless");
+                var service = EdgeDriverService.CreateDefaultService("/usr/local/bin");
+                service.HideCommandPromptWindow = true;
+                driver = new EdgeDriver(service, edgeOptions);
+            }
+            else
+                driver = new EdgeDriver(edgeOptions);
+
+            logger.LogInformation("driver started");
         }
 
         public void getPages()
@@ -100,7 +112,9 @@ namespace Scraper.Core.Sources
             {
                 driver.Navigate().GoToUrl($"{conf.scraperConfiguration.baseUrl}/manga/{url.slug}");
                 getTitleInfo();
+                logger.LogInformation("title parsed");
                 getChapters();
+                logger.LogInformation("chapter parsed");
                 getImages();
                 break;
             }
@@ -108,11 +122,13 @@ namespace Scraper.Core.Sources
              
         public void getTitleInfo()
         {
-            var url = driver.Url.Split("/")[driver.Url.Split("/").Length - 1];
+            try
+            {
+                var url = driver.Url.Split("/")[driver.Url.Split("/").Length - 1];
 
-            rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о тайтле по ссылке {url} начато"));
+                rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о тайтле по ссылке {url} начато"));
 
-            List<KeyValuePair<string, string>> args = new List<KeyValuePair<string, string>>()
+                List<KeyValuePair<string, string>> args = new List<KeyValuePair<string, string>>()
             {
                 new KeyValuePair<string, string>("fields[]", "eng_name"),
                 new KeyValuePair<string, string>("fields[]", "otherNames"),
@@ -129,127 +145,148 @@ namespace Scraper.Core.Sources
                 new KeyValuePair<string, string>("fields[]", "format"),
             };
 
-            externalServer.externalExecute($"/{url}", Method.Get, args);
-            _title = JsonConvert.DeserializeObject<MangalibJson.Title>(Regex.Replace(externalServer.response.Content, @"(^{""data"":)|(,""meta"":{""\w+"":""\w+""}}$)", ""));
+                externalServer.externalExecute($"/{url}", Method.Get, args);
+                _title = JsonConvert.DeserializeObject<MangalibJson.Title>(Regex.Replace(externalServer.response.Content, @"(^{""data"":)|(,""meta"":{""\w+"":""\w+""}}$)", ""));
 
-            title.name = _title.rus_name;
-            title.altName = _title.eng_name;
-            title.otherNames = string.Join(",", _title.otherNames);
-            title.description = _title.summary;
-            title.type = _title.type.label;
+                title.name = _title.rus_name;
+                title.altName = _title.eng_name;
+                title.otherNames = string.Join(",", _title.otherNames);
+                title.description = _title.summary;
+                title.type = _title.type.label;
 
 
-            switch (_title.scanlateStatus.label)
-            {
-                case "Продолжается":
-                    title.translateStatus = TranslateStatus.continues;
-                    break;
+                switch (_title.scanlateStatus.label)
+                {
+                    case "Продолжается":
+                        title.translateStatus = TranslateStatus.continues;
+                        break;
 
-                case "Завершён":
-                    title.translateStatus = TranslateStatus.finished;   
-                    break;
+                    case "Завершён":
+                        title.translateStatus = TranslateStatus.finished;
+                        break;
 
-                case "Заморожен":
-                    title.translateStatus = TranslateStatus.freezed;
-                    break;
+                    case "Заморожен":
+                        title.translateStatus = TranslateStatus.freezed;
+                        break;
 
-                case "Заброшен":
-                    title.translateStatus = TranslateStatus.terminated;
-                    break;
+                    case "Заброшен":
+                        title.translateStatus = TranslateStatus.terminated;
+                        break;
+                }
+
+                switch (_title.status.label)
+                {
+                    case "Онгоинг":
+                        title.titleStatus = TitleStatus.continues;
+                        break;
+
+                    case "Анонс":
+                        title.titleStatus = TitleStatus.announcement;
+                        break;
+
+                    case "Выпуск прекращён":
+                        title.titleStatus = TitleStatus.terminated;
+                        break;
+
+                    case "Завершён":
+                        title.titleStatus = TitleStatus.finished;
+                        break;
+
+                    case "Приостановлен":
+                        title.titleStatus = TitleStatus.suspended;
+                        break;
+                }
+
+                title.releaseYear = ushort.Parse(_title.releaseDate);
+
+                foreach (var genre in _title.genres)
+                {
+                    title.genres.Add(genre.name);
+                }
+
+                switch (_title.ageRestriction.label)
+                {
+                    case "16+":
+                        title.ageLimiter = AgeLimiter.minor;
+                        break;
+
+                    case "18+":
+                        title.ageLimiter = AgeLimiter.adult;
+                        break;
+                }
+
+                title.releaseFormat = string.Join(",", _title.format.Select(x => x.name));
+
+                rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о тайтле {title.name} завершено успешно"));
+
+                externalServer.externalExecute($"{url}/covers", Method.Get, args);
+
+                MangalibJson.Covers[] covers = JsonConvert.DeserializeObject<MangalibJson.Covers[]>(Regex.Replace(externalServer.response.Content, @"(^{""data"":)|(}$)", ""));
+
+                title.covers = new List<IImage>();
+
+                foreach (var cover in covers)
+                {
+                    title.covers.Add(new Image(cover.cover.orig));
+                }
+
+                ftpServer.rootPath = conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root;
+                CustomDirectory directory = new CustomDirectory("storage");
+
+                if (!Directory.Exists(@$"storage/titles"))
+                    directory.createDirectory("titles");
+
+                var path = conf.appConfiguration.production ? @$"titles/" : @$"titles\";
+
+                if (!conf.appConfiguration.production)
+                {
+                    if (!Directory.Exists($"storage/{path}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
+                        directory.createDirectory($@"{path}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
+                }
+                else
+                {
+                    if (!Directory.Exists($"storage/{path}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\/*/&/]/[\|]+", ""))}"))
+                        directory.createDirectory($@"{path}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\/*/&/]/[\|]+", ""))}");
+                }
+
+                path += !conf.appConfiguration.production ? @$"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\/*/&/]/[\|]+", ""))}\" : @$"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\/*/&/]/[\|]+", ""))}/";
+
+                if (!Directory.Exists(@$"{path}covers"))
+                    directory.createDirectory(@$"{path}covers");
+                //ftpServer.rootPath += path;
+
+                //ftpServer.connect();
+
+                Console.WriteLine($"\n{path}");
+
+                path = $"storage/{path}";
+
+                MangalibUploader uploader = new MangalibUploader(path, conf);
+                uploader.uploadCovers(title.covers);
+
+                title.path = $@"titles/{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}";
+
+                server.execute("v1.0/titles", title, Method.Get);
+                return;
+
+                args = new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("eng_name", title.altName),
+                    new KeyValuePair<string, string>("ru_name",title.name)
+                };
+
+                server.execute("v1.0/titles", Method.Get, args);
+                var createdTitle = JsonConvert.DeserializeObject<dynamic>(Regex.Replace(server.response.Content, @"(^{""data"":\[)|(\]?,?((""meta"")|(""links"")):{""?[\w0-9\\\/.\:\?\=\,""\[\]\{\}\&\;\s]+""?\}?)", ""));
+
+                server.execute($"v1.0/titles/{createdTitle.slug}/covers", title.covers, Method.Post);
+
+                server.execute($"v1.0/titles/{createdTitle.slug}/genres", title, Method.Post);
             }
-
-            switch (_title.status.label)
+            catch (Exception ex)
             {
-                case "Онгоинг":
-                    title.titleStatus = TitleStatus.continues;
-                    break;
-
-                case "Анонс":
-                    title.titleStatus = TitleStatus.announcement;
-                    break;
-
-                case "Выпуск прекращён":
-                    title.titleStatus = TitleStatus.terminated;
-                    break;
-
-                case "Завершён":
-                    title.titleStatus = TitleStatus.finished;
-                    break;
-
-                case "Приостановлен":
-                    title.titleStatus = TitleStatus.suspended;
-                    break;
+                logger.LogError(ex.Message + " " + ex.StackTrace);
             }
-
-            title.releaseYear = ushort.Parse(_title.releaseDate);
-
-            foreach (var genre in _title.genres)
-            {
-                title.genres.Add(genre.name);
-            }
-
-            switch (_title.ageRestriction.label)
-            {
-                case "16+":
-                    title.ageLimiter = AgeLimiter.minor;
-                    break;
-
-                case "18+":
-                    title.ageLimiter = AgeLimiter.adult;
-                    break;
-            }
-
-            title.releaseFormat = string.Join(",", _title.format.Select(x => x.name));
-
-            rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о главе {title.name} завершено успешно"));
-
-            externalServer.externalExecute($"{url}/covers", Method.Get, args);
-
-            MangalibJson.Covers[] covers = JsonConvert.DeserializeObject<MangalibJson.Covers[]>(Regex.Replace(externalServer.response.Content, @"(^{""data"":)|(}$)", ""));
-
-            title.covers = new List<IImage>();
-
-            foreach (var cover in covers)
-            {
-                title.covers.Add(new Image(cover.cover.orig));
-            }
-
-            ftpServer.rootPath = conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root;
-            CustomDirectory directory = new CustomDirectory(ftpServer.rootPath);
-
-            if (!Directory.Exists(@$"{ftpServer.rootPath}titles"))
-                directory.createDirectory("titles");
-
-            var path = @$"titles\";
-
-            if (!Directory.Exists($"{ftpServer.rootPath}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}"))
-                directory.createDirectory($@"{path}{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}");
-
-            path += @$"{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}\";
-
-            if (!Directory.Exists(@$"{ftpServer.rootPath}\covers"))
-                Directory.CreateDirectory(@$"{ftpServer.rootPath}\covers");
-
-            ftpServer.connect();
-
-            MangalibUploader uploader = new MangalibUploader(ftpServer, conf);
-            uploader.uploadCovers(title.covers);
-
-            title.path = $@"titles\{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}";
-
-            server.execute("v1.0/titles", title, Method.Post);
-            
-            args = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("eng_name", title.altName),
-                new KeyValuePair<string, string>("ru_name",title.name)
-            };
-           
-            server.execute("v1.0/titles", Method.Get, args);
-            var createdTitle = JsonConvert.DeserializeObject<dynamic>(Regex.Replace(server.response.Content, @"(^{""data"":\[)|(\]?,?((""meta"")|(""links"")):{""?[\w0-9\\\/.\:\?\=\,""\[\]\{\}\&\;\s]+""?\}?)", ""));
-
-            server.execute($"v1.0/titles/{createdTitle.slug}/genres", title, Method.Post);
-
+                
             getPersons();
         }
 
@@ -296,7 +333,8 @@ namespace Scraper.Core.Sources
             };
 
             ftpServer.rootPath = conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root;
-            MangalibUploader uploader = new MangalibUploader(ftpServer, conf);
+            var path = "";
+            MangalibUploader uploader = new MangalibUploader(path, conf);
             uploader.uploadPersonalImages(title.persons);
 
             server.execute("v1.0/titles", Method.Get, args);
@@ -339,6 +377,8 @@ namespace Scraper.Core.Sources
             }
             else
             {
+                logger.LogInformation($"/{url}/chapters");
+
                 externalServer.externalExecute($"/{url}/chapters", RestSharp.Method.Get);
 
                 MangalibJson.Chapters[] chapters = JsonConvert.DeserializeObject<MangalibJson.Chapters[]>(Regex.Replace(externalServer.response.Content, @"(""data"":)|(^{)|(}$)", ""));
@@ -393,8 +433,8 @@ namespace Scraper.Core.Sources
         /// TODO Реализовать скачивание изображений
         /// </summary>
         public void getImages()
-        { 
-            MangalibUploader uploader = new MangalibUploader(ftpServer, conf);
+        {
+            MangalibUploader uploader = new MangalibUploader(title.path, conf);
 
             List<KeyValuePair<string, string>> args = new List<KeyValuePair<string, string>>()
             {
@@ -486,7 +526,5 @@ namespace Scraper.Core.Sources
             getImages();
             driver.Quit();
         }
-
-
     }
 }

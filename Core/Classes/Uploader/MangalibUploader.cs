@@ -15,63 +15,69 @@ namespace Scraper.Core.Classes.Uploader
     public class MangalibUploader : IUploader
     {
         private Configuration conf;
+        private string rootPath;
         public SixLabors.ImageSharp.Image image { get; set; }
         public Stream incomingStream { get; set; }
         public MemoryStream outgoingStream { get; set; }
-        private IFTPServer server { get; set; }
+        //private IFTPServer server { get; set; }
 
-        public MangalibUploader(IFTPServer ftpClient, Configuration conf)
+        public MangalibUploader(
+            //IFTPServer ftpClient,
+            string rootPath,
+            Configuration conf)
         {
-            server = ftpClient;
+            //server = ftpClient;
             this.conf = conf;
-            server.connect();
+            this.rootPath = rootPath;
+            //server.connect();
         }
+
         public void uploadChapterImages(IChapter chapter)
         {
             var path = "";
 
             if (!conf.appConfiguration.production)
             {
-                CustomDirectory directory = new CustomDirectory(server.rootPath);
+                CustomDirectory directory = new CustomDirectory(rootPath);
 
-                if (!Directory.Exists(@$"{server.rootPath}{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}") && String.IsNullOrEmpty(chapter.volume))
+                if (!Directory.Exists(@$"{rootPath}{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}") && String.IsNullOrEmpty(chapter.volume))
                 {
                     directory.createDirectory($@"{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}");
                     path += @$"{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}\";
-                }    
+                }
                 else
                 {
                     directory.createDirectory(@$"{chapter.volume}\{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}");
                     path += @$"{chapter.volume}\{chapter.number}\{RussianTransliterator.GetTransliteration(chapter.translator.name)}\";
                 }
 
-                chapter.url = $"{server.rootPath.Replace(conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root, "")}{path}";
+                chapter.url = $"{rootPath.Replace(conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root, "")}{path}";
             }
-            else
-            {
-                if (!String.IsNullOrEmpty(chapter.volume))
-                {
-                    if (!server.client.DirectoryExists($"{server.rootPath}{chapter.volume}"))
-                    {
-                        server.client.CreateDirectory($"{server.rootPath}{chapter.volume}");
-                        path += $"{chapter.volume}/";
-                    }
-                }
-                else path += $"{chapter.volume}/";
+            //else
+            //{
+            //    if (!String.IsNullOrEmpty(chapter.volume))
+            //    {
+            //        if (!server.client.DirectoryExists($"{server.rootPath}{chapter.volume}"))
+            //        {
+            //            server.client.CreateDirectory($"{server.rootPath}{chapter.volume}");
+            //            path += $"{chapter.volume}/";
+            //        }
+            //    }
+            //    else path += $"{chapter.volume}/";
 
-                if (!server.client.DirectoryExists($"{server.rootPath}{chapter.number}") && String.IsNullOrEmpty(chapter.volume))
-                {
-                    server.client.CreateDirectory($"{server.rootPath}{chapter.number}");
-                    path += $"{chapter.number}/";
-                }
-                else
-                {
-                    server.client.CreateDirectory($"{server.rootPath}/{chapter.volume}/{chapter.number}");
-                    path += $"{chapter.volume}/{chapter.number}/";
-                }
+            //    if (!server.client.DirectoryExists($"{server.rootPath}{chapter.number}") && String.IsNullOrEmpty(chapter.volume))
+            //    {
+            //        server.client.CreateDirectory($"{server.rootPath}{chapter.number}");
+            //        path += $"{chapter.number}/";
+            //    }
+            //    else
+            //    {
+            //        server.client.CreateDirectory($"{server.rootPath}/{chapter.volume}/{chapter.number}");
+            //        path += $"{chapter.volume}/{chapter.number}/";
+            //    }
 
-                chapter.url = $"{server.rootPath}{path}";
-            }
+            //    chapter.url = $"{server.rootPath}{path}";
+            //}
 
             var webp = "";
 
@@ -91,10 +97,7 @@ namespace Scraper.Core.Classes.Uploader
                             outgoingStream = new MemoryStream();
                             image.Save(outgoingStream, new WebpEncoder());
 
-                            if (conf.appConfiguration.production)
-                                server.client.UploadStream(outgoingStream, $"{server.rootPath}{path}{i + 1}.webp");
-                            else
-                                using (FileStream fileStream = new FileStream($"{server.rootPath}{path}{i + 1}.webp", FileMode.Create, FileAccess.Write))
+                                using (FileStream fileStream = new FileStream($"{path}{i + 1}.webp", FileMode.Create, FileAccess.Write))
                                 {
                                     outgoingStream.Seek(0, SeekOrigin.Begin);
                                     outgoingStream.CopyTo(fileStream);
@@ -116,8 +119,10 @@ namespace Scraper.Core.Classes.Uploader
         
         public void uploadCovers(List<IImage> images)
         {
+            
             for (int i = 0; i < images.Count(); i++)
             {
+                Console.WriteLine($"\n{rootPath}");
                 using (HttpClient httpClient = new HttpClient())
                 {
                     try
@@ -128,20 +133,17 @@ namespace Scraper.Core.Classes.Uploader
                         outgoingStream = new MemoryStream();
                         image.Save(outgoingStream, new WebpEncoder());
 
-                        if (conf.appConfiguration.production)
-                            server.client.UploadStream(outgoingStream, $"{server.rootPath}{i + 1}.webp");
-                        else
-                            using (FileStream fileStream = new FileStream(@$"{server.rootPath}covers\{i + 1}.webp", FileMode.Create, FileAccess.Write))
-                            {
-                                outgoingStream.Seek(0, SeekOrigin.Begin);
-                                outgoingStream.CopyTo(fileStream);
-                                images[i].path = @$"{server.rootPath.Replace(conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root, "")}\covers\{i + 1}";
-                                images[i].extension = "webp";
-                            }
+                        using (FileStream fileStream = new FileStream(!conf.appConfiguration.production ? @$"{rootPath}covers\{i + 1}.webp" : @$"{rootPath}covers/{i + 1}.webp", FileMode.Create, FileAccess.Write))
+                        {
+                            outgoingStream.Seek(0, SeekOrigin.Begin);
+                            outgoingStream.CopyTo(fileStream);
+                            images[i].path = @$"{i + 1}";
+                            images[i].extension = "webp";
+                        }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Ошибка: {ex.Message}");
+                        Console.WriteLine($"\nОшибка: {ex.Message}, {ex.InnerException} {rootPath}covers/{i + 1}.webp");
                     }
                 }
             }
@@ -151,14 +153,17 @@ namespace Scraper.Core.Classes.Uploader
             string path = conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root;
 
             CustomDirectory directory = new CustomDirectory(path);
-            path += @"persons\";
+            if (!Directory.Exists(@$"{path}persons"))
+                directory.createDirectory("persons");
+            
+            path += !conf.appConfiguration.production ? @"persons\" : @"persons/";
 
             foreach (var person in persons)
             {
                 if (!Directory.Exists(@$"{path}{person.altName}"))
                 {
-                    directory.createDirectory(@$"persons\{person.altName}");
-                    path = @$"{path}{person.altName}\";
+                    directory.createDirectory(!conf.appConfiguration.production ? @$"{path}\{person.altName}" : @$"{path}/{person.altName}");
+                    path = !conf.appConfiguration.production ? @$"{path}{person.altName}\" : @$"{path}{person.altName}/";
                 }
 
                 for (int i = 0; i < person.images.Count(); i++)
@@ -176,16 +181,13 @@ namespace Scraper.Core.Classes.Uploader
                             outgoingStream = new MemoryStream();
                             image.Save(outgoingStream, new WebpEncoder());
 
-                            if (conf.appConfiguration.production)
-                                server.client.UploadStream(outgoingStream, $"{server.rootPath}{i + 1}.webp");
-                            else
-                                using (FileStream fileStream = new FileStream(@$"{path}\{i + 1}.webp", FileMode.Create, FileAccess.Write))
-                                {
-                                    outgoingStream.Seek(0, SeekOrigin.Begin);
-                                    outgoingStream.CopyTo(fileStream);
-                                    person.images[i].path = $"persons/{person.altName}/{i + 1}";
-                                    person.images[i].extension = "webp";
-                                }
+                            using (FileStream fileStream = new FileStream(!conf.appConfiguration.production ? @$"{path}\{i + 1}.webp" : @$"{path}/{i + 1}.webp", FileMode.Create, FileAccess.Write))
+                            {
+                                outgoingStream.Seek(0, SeekOrigin.Begin);
+                                outgoingStream.CopyTo(fileStream);
+                                person.images[i].path = $"{person.altName}/{i + 1}";
+                                person.images[i].extension = "webp";
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -193,7 +195,7 @@ namespace Scraper.Core.Classes.Uploader
                         }
                     }
                 }
-                path = path.Replace($@"{person.altName}\", "");
+                path = path.Replace(!conf.appConfiguration.production ? $@"{person.altName}\" : $@"{person.altName}/", "");
             }
         }
     }
