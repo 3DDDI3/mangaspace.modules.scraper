@@ -2,15 +2,15 @@
   "app": {
     "name": "MangaSpaceScraper",
     "version": "1.0.0",
-    //"production": false,
-    "production": true,
+    "production": false,
+    //"production": true,
     "local_root": "\\\\wsl$\\Ubuntu\\home\\laravel\\storage\\",
     "prod_root": "storage/"
   },
-  "api": {
-    "token": "10|eBrkr3oTR1rx0qlgBi2PZSCvPTWoPHiTJMLwIhlV2197900a",
-    "baseUrl": "http://api.mangaspace.ru:83"
-  },
+    "api": {
+        "token": "11|ztVTRxo4ahNk0UQrmPWrvYa4QKd1TtNTX15yqyGkba9cb399",
+        "baseUrl": "http://api.mangaspace.ru:83"
+    },
   "remanga": {
     "baseUrl": "https://remanga.org/",
     "catalogUrl": "manga",
@@ -41,7 +41,7 @@
     "username": "guest",
     "password": "guest",
     "port": 5672,
-    //"hostname": "127.0.0.1"
-    "hostname": "host.docker.internal"
+    "hostname": "127.0.0.1"
+    //"hostname": "host.docker.internal"
   }
 }

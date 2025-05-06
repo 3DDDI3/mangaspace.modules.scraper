@@ -8,28 +8,33 @@ namespace Scraper.Core.Json.Remanga
 {
     public class Chapter
     {
-        public ChapterContent content { get; set; }
+        public _Chapter[] results { get; set; }
+        public int count { get; set; }
+        public string? next { get; set; }
     }
 
-    public class ChapterContent
-    {
-        public string tome { get; set; }
-        public string name { get; set; }
-        public string chapter { get; set; }
-        public Publisher[] publishers { get; set; }
-        public Pages[][] pages { get; set; }
-    }
-
-    public class Pages
+    public class _Chapter
     {
         public string id { get; set; }
-        public string link { get; set; }
-        public string width { get; set; }
-        public string height { get; set; }
+        public string index {get; set; }
+        public string tome { get; set; }
+        public string? name { get; set; }
+        public string chapter { get; set; }
+        public _Publisher[] publishers { get; set; }
     }
 
-    public class Publisher
+    public class _Publisher
     {
+        public int id { get; set; }
+        public string name { get; set; }
         public string dir { get; set; }
+        public Cover cover { get; set; }
     }
+
+    public class Cover
+    {
+        public string mid {  get; set; }
+        public string high { get; set; }
+    }
+
 }

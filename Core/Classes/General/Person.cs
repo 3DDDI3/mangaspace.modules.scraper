@@ -11,5 +11,6 @@ namespace Scraper.Core.Classes.General
         public List<IImage> images { get; set; }
         public string altName { get; set; }
         public string url { get; set; }
+        public List<string> contacts { get; set; }
     }
 }

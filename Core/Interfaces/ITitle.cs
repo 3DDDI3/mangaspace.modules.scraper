@@ -24,12 +24,11 @@ namespace Scraper.Core.Interfaces
         public string description { get; set; }
         public string type { get; set; }
         public string releaseFormat { get; set; }
-        public ushort releaseYear { get; set; }
+        public ushort? releaseYear { get; set; }
         public AgeLimiter ageLimiter { get; set; }
         public TitleStatus titleStatus { get; set; }
         public TranslateStatus translateStatus { get; set; }
         public List<IChapter> chapters { get; set; }
-        public List<string> contacts { get; set; }
         public List<string> genres { get; set; }
         public List<IPerson> persons { get; set; }
         public string country { get; set; }

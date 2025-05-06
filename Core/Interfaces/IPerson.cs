@@ -10,5 +10,6 @@ namespace Scraper.Core.Interfaces
         public PersonType type { get; set; }
         public string? description { get; set; }
         public List<IImage>? images { get; set; }
+        public List<string> contacts { get; set; }
     }
 }

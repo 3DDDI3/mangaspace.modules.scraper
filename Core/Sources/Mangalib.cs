@@ -129,21 +129,21 @@ namespace Scraper.Core.Sources
                 rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о тайтле по ссылке {url} начато"));
 
                 List<KeyValuePair<string, string>> args = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("fields[]", "eng_name"),
-                new KeyValuePair<string, string>("fields[]", "otherNames"),
-                new KeyValuePair<string, string>("fields[]", "summary"),
-                new KeyValuePair<string, string>("fields[]", "releaseDate"),
-                new KeyValuePair<string, string>("fields[]", "type_id"),
-                new KeyValuePair<string, string>("fields[]", "genres"),
-                new KeyValuePair<string, string>("fields[]", "teams"),
-                new KeyValuePair<string, string>("fields[]", "authors"),
-                new KeyValuePair<string, string>("fields[]", "publisher"),
-                new KeyValuePair<string, string>("fields[]", "manga_status_id"),
-                new KeyValuePair<string, string>("fields[]", "status_id"),
-                new KeyValuePair<string, string>("fields[]", "artists"),
-                new KeyValuePair<string, string>("fields[]", "format"),
-            };
+                {
+                    new KeyValuePair<string, string>("fields[]", "eng_name"),
+                    new KeyValuePair<string, string>("fields[]", "otherNames"),
+                    new KeyValuePair<string, string>("fields[]", "summary"),
+                    new KeyValuePair<string, string>("fields[]", "releaseDate"),
+                    new KeyValuePair<string, string>("fields[]", "type_id"),
+                    new KeyValuePair<string, string>("fields[]", "genres"),
+                    new KeyValuePair<string, string>("fields[]", "teams"),
+                    new KeyValuePair<string, string>("fields[]", "authors"),
+                    new KeyValuePair<string, string>("fields[]", "publisher"),
+                    new KeyValuePair<string, string>("fields[]", "manga_status_id"),
+                    new KeyValuePair<string, string>("fields[]", "status_id"),
+                    new KeyValuePair<string, string>("fields[]", "artists"),
+                    new KeyValuePair<string, string>("fields[]", "format"),
+                };
 
                 externalServer.externalExecute($"/{url}", Method.Get, args);
                 _title = JsonConvert.DeserializeObject<MangalibJson.Title>(Regex.Replace(externalServer.response.Content, @"(^{""data"":)|(,""meta"":{""\w+"":""\w+""}}$)", ""));
@@ -266,7 +266,7 @@ namespace Scraper.Core.Sources
 
                 title.path = $@"titles/{RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|]+", ""))}";
 
-                server.execute("v1.0/titles", title, Method.Get);
+                server.execute("v1.0/titles", title, Method.Post);
                 return;
 
                 args = new List<KeyValuePair<string, string>>()

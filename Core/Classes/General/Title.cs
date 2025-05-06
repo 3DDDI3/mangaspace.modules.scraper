@@ -18,7 +18,7 @@ namespace Scraper.Core.Classes.General
         public string description { get; set; }
         public string type { get; set; }
         public string releaseFormat { get; set; }
-        public ushort releaseYear { get; set; }
+        public ushort? releaseYear { get; set; }
         public TitleStatus titleStatus { get; set; }
         public TranslateStatus translateStatus { get; set; }
         public List<string> genres { get; set; }
