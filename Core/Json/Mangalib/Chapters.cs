@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Scraper.Core.Json.Mangalib
 {
+    /// <summary>
+    ///  Главы
+    /// </summary>
     public class Chapters
     {
         public int id { get; set; }

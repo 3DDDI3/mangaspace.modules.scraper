@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Scraper.Core.Classes.General.Chapter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAAAEBAMAAAAAAAAAAAKAAA=</HashCode>
+      <FileName>Core\Classes\General\Chapter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.Configuration" Collapsed="true">
+    <Position X="14.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAEBAAAAAAAAABAAAA=</HashCode>
+      <FileName>Core\Classes\General\Configuration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.ScraperConfiguration" Collapsed="true">
+    <Position X="13" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAACAAAAAAAAAAAAAAIAgAAAA=</HashCode>
+      <FileName>Core\Classes\General\Configuration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.ApiConfiguration" Collapsed="true">
+    <Position X="9.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Core\Classes\General\Configuration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.AppConfiguration" Collapsed="true">
+    <Position X="11.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgACAAAAAAAACAAAAAAAAAAAAEAAAAAAAAACAAAAA=</HashCode>
+      <FileName>Core\Classes\General\Configuration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.ServerConfiguration" Collapsed="true">
+    <Position X="18.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAAAIAAAAAAACAgAAAAA=</HashCode>
+      <FileName>Core\Classes\General\Configuration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.RabbitMQConfiguration" Collapsed="true">
+    <Position X="13" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAAAAAAAAAEAAAAAAAgAAAAAAgAAAAA=</HashCode>
+      <FileName>Core\Classes\General\Configuration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.CustomDirectory" Collapsed="true">
+    <Position X="16.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>Core\Classes\General\Directory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.FTPServer" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAAAIAAAAAAACBgAAAAA=</HashCode>
+      <FileName>Core\Classes\General\FTPServer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.Image" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Core\Classes\General\Image.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.Page" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAIAAIAgAAAA=</HashCode>
+      <FileName>Core\Classes\General\Page.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.Person" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAAAAAAIAAAAAAAEAANAAAAAACAAAAAAAA=</HashCode>
+      <FileName>Core\Classes\General\Person.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.RemangaPage" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAIAAIAgAAAA=</HashCode>
+      <FileName>Core\Classes\General\RemangaPage.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.Server" Collapsed="true">
+    <Position X="18.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAACAAACAAAEAACABAAAAAAAAAAABAgAAAA=</HashCode>
+      <FileName>Core\Classes\General\Server.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Classes.General.Title" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAARAAAAAQAAgIAACAAADAAANAAACJQCAAAAAQAA=</HashCode>
+      <FileName>Core\Classes\General\Title.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Scraper.Core.Classes.RabbitMQ.RMQ" Collapsed="true">
+    <Position X="9.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgYAAQAAABAAAAAAEAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Classes\RabbitMQ\RMQ.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Classes.RabbitMQ.RMQMessage" Collapsed="true">
+    <Position X="11.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAIQAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Classes\RabbitMQ\RMQMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Classes.Uploader.MangaClubUploader" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAIAAAAAAAAAAAAAAAAAIEAQAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Core\Classes\Uploader\MangaClubUploader.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Scraper.Core.Classes.Uploader.MangalibUploader" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAIAAAAASAAAAAAAAAAAIFAQAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Classes\Uploader\MangalibUploader.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Scraper.Core.Classes.Uploader.MangaovhUploader" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAIAAAAAAAAAAAAAAAAAIEAQAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Core\Classes\Uploader\MangaovhUploader.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Scraper.Core.Classes.Uploader.RemangaUploader" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAIAAAAASAAAAAAAAAAAIFAQAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Classes\Uploader\RemangaUploader.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Scraper.Core.Sources.Mangalib" Collapsed="true">
+    <Position X="9.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UAAAAAAAQoAiAAACNBAAAACgBAAAAAAAAEACIAAAIAI=</HashCode>
+      <FileName>Core\Sources\Mangalib.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Scraper.Core.Sources.Remanga" Collapsed="true">
+    <Position X="11.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UAAAAAAAQAASAIACNBAAAACgBAAAAAAAAEACIAAAIAI=</HashCode>
+      <FileName>Core\Sources\Remanga.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -20,13 +20,15 @@ namespace Scraper.Core.Classes.General
         {
             this.conf = conf;
             this.logger = logger;
-            this.rmq = rmq;
+            this.rmq = rmq; 
             client = new RestClient(new Uri(conf.apiConfiguration.baseUrl));
         }
 
-        public Server(string resorceBaseUrl)
+        public Server(string resorceBaseUrl, ILogger logger, Configuration conf)
         {
             client = new RestClient(new Uri(resorceBaseUrl));
+            this.conf = conf;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -50,7 +52,7 @@ namespace Scraper.Core.Classes.General
                 request.AddJsonBody(JsonConvert.SerializeObject(obj));
 
                 response = client.Execute(request);
-                logger.LogInformation(response.Content);
+
                 if (!response.IsSuccessful)
                 {
                     JObject jObj = JObject.Parse(response.Content);
@@ -111,6 +113,9 @@ namespace Scraper.Core.Classes.General
                 ["Accept"] = "application/json"
             });
 
+            if (conf.scraperConfiguration.authorization != null)
+                request.AddHeader("Authorization", conf.scraperConfiguration.authorization);
+
             if (args != null)
                 foreach (var arg in args)
                 {
@@ -118,6 +123,8 @@ namespace Scraper.Core.Classes.General
                 }
 
             response = client.Execute(request);
+
+            logger.LogInformation(client.BuildUri(request).ToString());
         }
 
     }

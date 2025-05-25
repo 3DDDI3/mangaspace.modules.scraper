@@ -14,6 +14,7 @@
         public string baseUrl { get; set; }
         public string catalogUrl { get; set; }
         public string pages { get; set; }
+        public string authorization {  get; set; }   
     }
 
     public class ApiConfiguration
@@ -26,9 +27,9 @@
     {
         public string name { get; set; }
         public string version { get; set; }
-        public bool production { get; set; }
-        public string local_root { get; set; }
-        public string prod_root { get; set; }
+        public string local_root {  get; set; }
+        public string prod_root {  get; set; }
+        public bool containerized { get; set; }
     }
 
     public class ServerConfiguration
@@ -45,5 +46,6 @@
         public string password { get; set; }
         public int port { get; set; }
         public string hostname { get; set; }
+        public string requestedHeartbeat { get; set; }
     }
 }

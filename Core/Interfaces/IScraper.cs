@@ -1,4 +1,4 @@
-﻿using OpenQA.Selenium.Edge;
+﻿ using OpenQA.Selenium.Edge;
 using Scraper.Core.Classes.General;
 
 namespace Scraper.Core.Interfaces

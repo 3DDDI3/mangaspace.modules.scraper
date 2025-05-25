@@ -1,25 +1,33 @@
 ﻿using FluentFTP;
+using RussianTransliteration;
 using Scraper.Core.Classes.General;
+using Scraper.Core.Classes.RabbitMQ;
+using Scraper.Core.DTO;
 using Scraper.Core.Interfaces;
+using Scraper.Core.Json.Mangalib;
 using SixLabors.ImageSharp.Formats.Webp;
 using System;
 using System.IO;
 using System.Net;
+using System.Net.NetworkInformation;
+using System.Text.RegularExpressions;
 
 namespace Scraper.Core.Classes.Uploader
 {
     public class RemangaUploader : IUploader
     {
         private Configuration conf;
+        private RMQ rmq;
         public SixLabors.ImageSharp.Image image { get; set; }
         public Stream incomingStream { get; set; }
         public MemoryStream outgoingStream { get; set; }
         private CustomDirectory directory { get; set; }
 
-        public RemangaUploader(CustomDirectory directory, Configuration conf)
+        public RemangaUploader(CustomDirectory directory, Configuration conf, RMQ rmq)
         {
             this.directory = directory;
             this.conf = conf;
+            this.rmq = rmq;
         }
 
         /// <summary>
@@ -28,63 +36,16 @@ namespace Scraper.Core.Classes.Uploader
         /// <param name="chapter"></param>
         public void uploadChapterImages(IChapter chapter)
         {
-            var path = "";
-
-            if (!conf.appConfiguration.production)
-            {
-                //if (!String.IsNullOrEmpty(chapter.volume))
-                //{
-                //    if (!Directory.Exists($"{server.rootPath}{chapter.volume}"))
-                //    {
-                //        Directory.CreateDirectory($"{server.rootPath}{chapter.volume}");
-                //        path += @$"{chapter.volume}\";
-                //    }
-                //}
-                //else path += @$"{chapter.volume}\";
-
-                //if (!Directory.Exists($"{server.rootPath}{chapter.number}") && String.IsNullOrEmpty(chapter.volume))
-                //{
-                //    Directory.CreateDirectory($"{server.rootPath}{chapter.number}");
-                //    path += @$"{chapter.number}\";
-                //}
-                //else
-                //{
-                //    Directory.CreateDirectory(@$"{server.rootPath}\{chapter.volume}\{chapter.number}");
-                //    path += @$"{chapter.volume}\{chapter.number}\";
-                //}
-
-                //chapter.url = $"{server.rootPath.Replace(@"\\wsl$\Ubuntu\home\laravel\mangaspace\src\storage\app\media\", "")}{path}";
-            }
-            else
-            {
-                //if (!String.IsNullOrEmpty(chapter.volume))
-                //{
-                //    if (!server.client.DirectoryExists($"{server.rootPath}{chapter.volume}"))
-                //    {
-                //        server.client.CreateDirectory($"{server.rootPath}{chapter.volume}");
-                //        path += $"{chapter.volume}/";
-                //    }
-                //}
-                //else path += $"{chapter.volume}/";
-
-                //if (!server.client.DirectoryExists($"{server.rootPath}{chapter.number}") && String.IsNullOrEmpty(chapter.volume))
-                //{
-                //    server.client.CreateDirectory($"{server.rootPath}{chapter.number}");
-                //    path += $"{chapter.number}/";
-                //}
-                //else
-                //{
-                //    server.client.CreateDirectory($"{server.rootPath}/{chapter.volume}/{chapter.number}");
-                //    path += $"{chapter.volume}/{chapter.number}/";
-                //}
-
-                //chapter.url = $"{server.rootPath}{path}";
-            }
+            string extensions = "";
 
             for (int i = 0; i < chapter.images.Count; i++)
             {
-                for (int j = 0; j < chapter.images[i].Count; j++)
+                for (int j = 0; j < chapter.images[i].Count(); j++)
                 {
+                    directory.createDirectory(chapter.volume);
+                    directory.createDirectory(chapter.number);
+                    directory.createDirectory(RussianTransliterator.GetTransliteration(Regex.Replace(chapter.translator.name, @"[\/\\\*\&\]\[\|\.]+", "")));
+
                     using (HttpClient httpClient = new HttpClient())
                     {
                         httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
@@ -97,18 +58,27 @@ namespace Scraper.Core.Classes.Uploader
                             outgoingStream = new MemoryStream();
                             image.Save(outgoingStream, new WebpEncoder());
 
-                            directory.createFile(Path.Combine($"{i + 1}.webp"), outgoingStream);
+                            directory.createFile(Path.Combine($"{i + 1}_{j + 1}.webp"), outgoingStream);
 
-                            Console.WriteLine("Изображение успешно загружено на FTP-сервер.");
+                            Console.WriteLine($"Изображение {i+1}_{j+1}.webp {chapter.number} главы успешно скачано.");
+
+                            rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Изображение {i + 1}_{j + 1}.webp {chapter.number} главы успешно скачано."));
                         }
                         catch (Exception ex)
                         {
                             Console.WriteLine($"Ошибка: {ex.Message}");
+                            rmq.send("information", "errorLog", new LogDTO(ex.Message));
                         }
+
+                        extensions += $"{i + 1}_{j + 1},";
                     }
+                    directory.rootPath = directory.rootPath.Replace(Path.Combine(chapter.volume, chapter.number, RussianTransliterator.GetTransliteration(Regex.Replace(chapter.translator.name, @"[\/\\\*\&\]\[\|\.]+", ""))), "");
                 }
             }
-          
+            chapter.url = $"{chapter.volume}/{chapter.number}";
+            chapter.extensions = $"||{Regex.Replace(extensions, @"\,$", "")}|";
+
+            rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Изображения для {chapter.number} главы успешно скачаны."));
         }
 
         /// <summary>
@@ -132,7 +102,10 @@ namespace Scraper.Core.Classes.Uploader
                         image.Save(outgoingStream, new WebpEncoder());
 
                         directory.createFile($"{i + 1}.webp", outgoingStream);
-                        Console.WriteLine($"Обложка {i + 1}.webp успешно загружено на FTP-сервер.");
+
+                        images[i].path = $"{i + 1}";
+                        Console.WriteLine($"Обложка {i + 1}.webp успешно скачана.");
+                        rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Обложка {i + 1}.webp успешно скачана."));
                     }
                     catch (Exception ex)
                     {
@@ -163,21 +136,20 @@ namespace Scraper.Core.Classes.Uploader
                             image.Save(outgoingStream, new WebpEncoder());
 
                             directory.createFile($"{i + 1}.webp", outgoingStream);
-                            Console.WriteLine($"Фото {i + 1}.webp персоны {person.altName} успешно загружено на сервер.");
+
+                            person.images[i].path = $"{i + 1}";
+                            person.images[i].extension = "webp";
+
+                            Console.WriteLine($"Изображение {i + 1}.webp персоны {person.name} скачана.");
+                            rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Изображение {i + 1}.webp персоны {person.name} скачана."));
                         }
                         catch (Exception ex)
                         {
                             Console.WriteLine($"Ошибка: {ex.Message}");
                         }
                     }
-                    person.url = $"/perons/{person.altName}/{i+1}.webp";
                 }
             }
-        }
-
-        public void uploadPersonalImages()
-        {
-            throw new NotImplementedException();
         }
     }
 }

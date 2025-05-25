@@ -20,6 +20,7 @@ namespace Scraper.Core.Json.Remanga
         public string tome { get; set; }
         public string? name { get; set; }
         public string chapter { get; set; }
+        public string is_paid {get; set; }
         public _Publisher[] publishers { get; set; }
     }
 

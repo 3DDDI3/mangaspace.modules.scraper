@@ -1,11 +1,8 @@
-﻿using System.Text;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Scraper.Core.ActionHandlers;
-using Scraper.Core.Classes.General;
-using Scraper.Core.Classes.RabbitMQ;
 using Scraper.Core.Factories;
 using Scraper.Core.Interfaces;
 using Scraper.Core.Services;
@@ -22,7 +19,6 @@ public class Program
             })
             .ConfigureServices((hostContext, services) =>
             {
-                //services.AddSingleton<RMQ>(); // Регистрация RMQ
                 services.AddTransient<ActionHandlerFactory>(); // Регистрация обработчика Remanga
                 services.AddTransient<BaseActionHandler>(); // Регистрация фабрики
                 services.AddTransient<IActionHandler, MangalibHandler>();

@@ -21,10 +21,13 @@ using Scraper.Core.Json.Mangaovh;
 using Title = Scraper.Core.Classes.General.Title;
 using Page = Scraper.Core.Classes.General.Page;
 using System.IO;
+using System.Xml.Linq;
+using System;
+using Microsoft.Extensions.Options;
 
 namespace Scraper.Core.Sources
 {
-    public class Remanga:IScraper
+    public class Remanga : IScraper
     {
         private IFTPServer ftpServer;
         private RMQ rmq;
@@ -36,7 +39,6 @@ namespace Scraper.Core.Sources
         public IPage page { get; set; }
         public ITitle title { get; set; }
         public Server server { get; set; }
-      
 
         private ILogger logger;
 
@@ -46,10 +48,10 @@ namespace Scraper.Core.Sources
             this.rmq = rmq;
             this.conf = conf;
             server = new Server(conf, logger, rmq);
-            this.externalServer = new Server("https://api.remanga.org/api/v2/titles/");
+            this.externalServer = new Server("https://api.remanga.org/api/v2/titles/", logger, conf);
 
             title = new Title()
-            { 
+            {
                 persons = new List<IPerson>(),
                 contacts = new List<string>(),
                 genres = new List<string>(),
@@ -78,54 +80,81 @@ namespace Scraper.Core.Sources
         private void startDriver(EdgeOptions edgeOptions = null)
         {
             edgeOptions = edgeOptions ?? new EdgeOptions();
-            edgeOptions.AddArgument("--log-level=3");
+            if (conf.appConfiguration.containerized)
+            {
+                edgeOptions.AddArgument("--headless=new");  // Новый headless-режим (Edge 112+)
+                edgeOptions.AddArgument("--disable-gpu");
+                edgeOptions.AddArgument("--no-sandbox");    // Важно для Docker
+                edgeOptions.AddArgument("--disable-dev-shm-usage");
+                edgeOptions.AddArgument("--log-level=3");
+            }
+           
             driver = new EdgeDriver(edgeOptions);
         }
 
         public void parse()
         {
-            for (int i = 0; i <= page.pages.Count; i++)
+            externalServer = new Server("https://api.remanga.org/api/v2/search/catalog", logger, conf);
+            List<string> titles = new List<string>();
+
+            foreach (var page in rmq.rmqMessage.RequestDTO.pages)
             {
-                rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение тайтлов на {i + 1} странице"));
-
-                driver.Navigate().GoToUrl($"{page.baseUrl}/{page.catalogUrl}{page.pageUrl}{page.pages[i]}");
-                var titles = driver.FindElements(By.XPath("//div[@class='Grid_gridItem__aPUx1 p-1']/a"))
-                    .Select(x => x.GetAttribute("href"))
-                    .ToList();
-
-                rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение тайтлов на {i + 1} странице завершено")); ;
-              
-                foreach (var _title in titles)
+                List<KeyValuePair<string, string>> args = new List<KeyValuePair<string, string>>()
                 {
-                    driver.Navigate().GoToUrl(_title);
-                    getTitleInfo();
+                    new KeyValuePair<string, string>("count", "30"),
+                    new KeyValuePair<string, string>("ordering", "-rating"),
+                    new KeyValuePair<string, string>("page", page.ToString())
+                };
 
-                    server.execute("v1.0/titles", title, Method.Post);
-                    server.execute("v1.0/titles", new Dictionary<string, string>() { ["eng_name"] = title.altName, ["ru_name"] = title.name }, Method.Get);
-                    var createdTitle = JsonConvert.DeserializeObject<Title[]>(server.response.Content)[0];
-                    rmq.send("scraper", "parseTitleResponse", new ResponseDTO(
-                        new TitleDTO(
-                            null,
-                            new List<ChapterDTO>(),
-                            createdTitle.name),
-                        new ScraperDTO("", "")
-                        )
-                    );
+                externalServer.externalExecute("/", Method.Get, args);
 
-                    getChapters();                   
-                    getPersons();
-                    //getImages();
-
-                    break;
-                    break;
+                var _titles = JsonConvert.DeserializeObject<RemangaTitle>(externalServer.response.Content);
+                foreach (var item in _titles.results.Select(x => x.dir))
+                {
+                    titles.Add(item);
                 }
-                break;
+
             }
 
+            externalServer = new Server("https://api.remanga.org/api/v2/titles/", logger, conf);
+
+            for (int i = 0; i <= titles.Count(); i++)
+            {
+                driver.Navigate().GoToUrl($"{page.baseUrl}/{page.catalogUrl}/{titles[i]}");
+               
+
+                //getTitleInfo();
+
+                //server.execute("v1.0/titles", title, Method.Post);
+                //server.execute("v1.0/titles", new Dictionary<string, string>() { ["eng_name"] = title.altName, ["ru_name"] = title.name }, Method.Get);
+                //var createdTitle = JsonConvert.DeserializeObject<dynamic>(Regex.Replace(server.response.Content, @"(^{""data"":\[)|(\]?,?((""meta"")|(""links"")):{""?[\w0-9\\\/.\:\?\=\,""\[\]\{\}\&\;\s]+""?\}?)", ""));
+                getChapters();
+                rmq.rmqMessage.RequestDTO.titleDTO.chapterDTO = title.chapters.Select(
+                    x => new ChapterDTO(
+                        x.url,
+                        x.number,
+                        x.volume, 
+                        x.translator.name,
+                        x.name,
+                        x.Equals(title.chapters.First()), 
+                        x.Equals(title.chapters.Last())
+                    )
+                ).ToList();
+
+                parseChapters();
+
+            //    break;
+            //    break;
+            //}
+            //break;
+
+
             //rmq.send("information", "errorLog", new LogDTO(null, true));
-            driver.Quit();
+                driver.Quit();
+                break;
+            }
         }
-        
+
         /// <summary>
         /// Получение всех глав тайтла для дальнейшего парсинта
         /// </summary>
@@ -171,23 +200,21 @@ namespace Scraper.Core.Sources
             server.execute($"v1.0/titles/{createdTitle.slug}/covers", title.covers, Method.Post);
 
             server.execute($"v1.0/titles/{createdTitle.slug}/genres", title, Method.Post);
-            directory.rootPath = Path.Combine(conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root, "media");
+            directory.rootPath = Path.Combine(conf.appConfiguration.containerized ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root, "media");
             directory.createDirectory("persons");
 
-            RemangaUploader uploader = new RemangaUploader(directory, conf);
+            RemangaUploader uploader = new RemangaUploader(directory, conf, rmq);
             uploader.uploadPersonalImages(title.persons);
 
             server.execute($"v1.0/titles/{createdTitle.slug}/persons", title.persons, Method.Post);
 
-            
+            title.chapters = new List<IChapter>();
             foreach (var chapter in chapterDTO)
             {
                 externalServer.externalExecute($"/chapters/{Regex.Match(chapter.url, @"\d+$").Value}", Method.Get);
-             
+
                 var chapters = JsonConvert.DeserializeObject<Scraper.Core.Json.Remanga.Page>(externalServer.response.Content);
-                title.chapters = new List<IChapter>();
-
-
+                
                 var __image = new List<List<IImage>>();
                 foreach (var page in chapters.pages)
                 {
@@ -196,7 +223,17 @@ namespace Scraper.Core.Sources
                     __image.Add(image);
                 }
 
-                title.chapters.Add(new Chapter() { images=__image, name=chapters.name, volume=chapters.tome, number=chapters.index});
+                title.chapters.Add(new Chapter() { 
+                    images = __image, 
+                    name = chapters.name, 
+                    volume = chapters.tome, 
+                    number = chapters.chapter, 
+                    translator = new Person() { 
+                        type = PersonType.translator, 
+                        name = chapters.publishers[0].name, 
+                        altName = RussianTransliterator.GetTransliteration(Regex.Replace(chapters.publishers[0].name, @"[\/\\\*\&\]\[\|\.]+", "")) 
+                    } 
+                });
             }
 
             getImages();
@@ -224,16 +261,17 @@ namespace Scraper.Core.Sources
             };
 
             title.name = _title.main_name;
+            title.altName = _title.secondary_name;
+            title.path = RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|\.]+", ""));
             title.covers = new List<IImage>() { new Image($"https://remanga.org{_title.cover.high}") };
 
             rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о тайтле {title.name}"));
 
-            string path = conf.appConfiguration.production ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root;
-            directory = new CustomDirectory(path);
+            directory = new CustomDirectory(conf.appConfiguration.containerized ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root);
             directory.createDirectory("media");
             directory.createDirectory("titles");
 
-            directory.createDirectory(RussianTransliterator.GetTransliteration(Regex.Replace(title.name, @"[\/\\\*\&\]\[\|\.]+", "")));
+            directory.createDirectory(title.path);
 
             rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Создание папки для тайтла на сервере"));
 
@@ -243,7 +281,7 @@ namespace Scraper.Core.Sources
 
             rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Скачивание обложек тайтла"));
 
-            RemangaUploader remangaUploader = new RemangaUploader(directory, conf);
+            RemangaUploader remangaUploader = new RemangaUploader(directory, conf, rmq);
             remangaUploader.uploadCovers(title.covers);
 
             rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Скачивание обложек тайтла успешно завершено"));
@@ -319,13 +357,17 @@ namespace Scraper.Core.Sources
                 case "18+":
                     title.ageLimiter = AgeLimiter.adult;
                     break;
+
+                case "Для всех":
+                    title.ageLimiter = AgeLimiter.all;
+                    break;
             }
 
             title.genres = _title.genres.Select(x => x.name).ToList();
 
             rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о тайтле {title.name} завершено успешно"));
         }
-        
+
         public void getPersons()
         {
             try
@@ -378,6 +420,9 @@ namespace Scraper.Core.Sources
 
                 foreach (var item in chapter.results)
                 {
+                    if (bool.Parse(item.is_paid))
+                        continue;
+
                     title.chapters.Add(new Chapter()
                     {
                         volume = item.tome,
@@ -461,117 +506,24 @@ namespace Scraper.Core.Sources
                         }
                     }
                 }
+                break;
             }
         }
 
-        public async void getImages()
+        public void getImages()
         {
-            title.chapters.Reverse();
+            directory.rootPath = Path.Combine(conf.appConfiguration.containerized ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root, "media", "titles", title.path);
+
+            RemangaUploader remangaUploader = new RemangaUploader(directory, conf, rmq);
+
             foreach (var chapter in title.chapters)
             {
-                var chapterNumber = Regex.Matches(chapter.url, @"\/\d+")[0].Value;
+                remangaUploader.uploadChapterImages(chapter);
 
-                Json.Remanga.Chapter chapterJson = null;
-
-                try
-                {
-                    using (HttpClient client = new HttpClient())
-                    {
-                        var res = client.GetAsync($"https://api.remanga.org/api/titles/chapters{chapterNumber}").Result;
-
-                        if (res.StatusCode == HttpStatusCode.Unauthorized)
-                            continue;
-
-                        using (var response = res.EnsureSuccessStatusCode())
-                        {
-                            string responseBody = await response.Content.ReadAsStringAsync();
-                            chapterJson = JsonConvert.DeserializeObject<Json.Remanga.Chapter>(responseBody);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    rmq.send("information", "errorLog", new LogDTO(ex.Message));
-                }
-
-                //Translator translatorJson = null;
-
-                //try
-                //{
-                //    using (HttpClient client = new HttpClient())
-                //    {
-                //        using (var response = client.GetAsync($"https://api.remanga.org/api/publishers/{chapterJson.content.publishers[0].dir}").Result.EnsureSuccessStatusCode())
-                //        {
-                //            string responseBody = await response.Content.ReadAsStringAsync();
-                //            translatorJson = JsonConvert.DeserializeObject<Translator>(responseBody);
-                //        }
-                //    }
-                //}
-                //catch (Exception ex)
-                //{
-                //    rmq.send("information", "errorLog", new LogDTO(ex.Message));
-                //}
-
-                //chapter.number = chapterJson.content.chapter;
-                //chapter.volume = chapterJson.content.tome;
-                //chapter.name = chapterJson.content.name;
-                //chapter.translator.name = translatorJson.content.name;
-                //chapter.translator.description = translatorJson.content.description;
-                //chapter.translator.type = PersonType.translator;
-                //chapter.translator.images = new List<IImage>() { new Image($"{conf.scraperConfiguration.baseUrl}{translatorJson.content.img.high}") };
-
-                string jpg = "", jpeg = "", png = "", webp = "";
-
-                //for (int i = 0; i < chapterJson.content.pages.Length; i++)
-                //{
-                //    var page = chapterJson.content.pages[i];
-                //    var subImages = new List<IImage>();
-                //    for (int j = 0; j < page.Length; j++)
-                //    {
-                //        subImages.Add(new Image(page[j].link));
-
-                //        switch (Regex.Matches(page[j].link, @".(\w+)$")[0].Groups[1].Value)
-                //        {
-                //            case "webp":
-                //                webp += $"{i + 1}_{j + 1},";
-                //                break;
-                //            case "jpg":
-                //                jpg += $"{i + 1}_{j + 1},";
-                //                break;
-                //            case "jpeg":
-                //                jpeg += $"{i + 1}_{j + 1},";
-                //                break;
-                //            case "png":
-                //                png += $"{i + 1}_{j + 1},";
-                //                break;
-                //        }
-                //    }
-                //    chapter.images.Add(subImages);
-                //}
-
-                webp = webp.Length > 0 ? webp.Substring(0, webp.LastIndexOf(",")) : webp;
-                jpeg = jpeg.Length > 0 ? jpeg.Substring(0, jpeg.LastIndexOf(",")) : jpeg;
-                jpg = jpg.Length > 0 ? jpg.Substring(0, jpg.LastIndexOf(",")) : jpg;
-                png = png.Length > 0 ? png.Substring(0, png.LastIndexOf(",")) : png;
-
-                chapter.extensions = $"{jpeg}|{jpg}|{webp}|{png}";
-
-                var _chapter = JsonConvert.SerializeObject(chapter);
-
-                try
-                {
-                    //RemangaUploader uploader = new RemangaUploader(directory, conf);
-                    //uploader.uploadChapterImages(chapter);
-
-                    //server.execute("v1.0/titles", new Dictionary<string, string>() { ["eng_name"] = title.altName, ["ru_name"] = title.name }, Method.Get);
-                    //var createdTitle = JsonConvert.DeserializeObject<Title[]>(server.response.Content)[0];
-                    //server.execute($"v1.0/titles/{createdTitle.slug}/chapters", chapter, Method.Post);
-                    //server.execute($"v1.0/titles/{createdTitle.slug}/chapters/{chapter.number}/images", chapter, Method.Post);
-                }
-                catch (Exception ex)
-                {
-                    rmq.send("information", "errorLog", new LogDTO(ex.Message));
-                }
+                server.execute("v1.0/titles", new Dictionary<string, string>() { ["eng_name"] = title.altName, ["ru_name"] = title.name }, Method.Get);
+                var createdTitle = JsonConvert.DeserializeObject<dynamic>(Regex.Replace(server.response.Content, @"(^{""data"":\[)|(\]?,?((""meta"")|(""links"")):{""?[\w0-9\\\/.\:\?\=\,""\[\]\{\}\&\;\s]+""?\}?)", ""));
+                server.execute($"v1.0/titles/{createdTitle.slug}/chapters", chapter, Method.Post);
+                server.execute($"v1.0/titles/{createdTitle.slug}/chapters/{chapter.number}/images", chapter, Method.Post);
 
                 ResponseDTO responseDTO = new ResponseDTO(
                     new TitleDTO(null,
@@ -592,6 +544,8 @@ namespace Scraper.Core.Sources
                         rmq.rmqMessage.RequestDTO.scraperDTO.engine
                     )
                 );
+
+                Thread.Sleep(1000);
 
                 if (rmq.rmqMessage.RequestDTO.scraperDTO.action == "parseChapters")
                     rmq.send("scraper", "parseChapterResponse", responseDTO);

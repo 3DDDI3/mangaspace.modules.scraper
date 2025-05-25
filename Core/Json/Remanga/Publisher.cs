@@ -9,8 +9,8 @@ namespace Scraper.Core.Json.Remanga
     public class Publisher
     {
         public int id { get; set; }
-        public string name { get; set; }
-        public string dir { get; set; }
+        public string? name { get; set; }
+        public string? dir { get; set; }
         public _RemangaCover cover { get; set; }
     }
 

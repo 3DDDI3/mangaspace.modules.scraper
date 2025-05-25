@@ -25,6 +25,7 @@ namespace Scraper.Core.Services
             _logger = logger;
             _taskService = taskService;
             _conf = conf.Get<Configuration>();
+            _conf.appConfiguration = conf.GetSection("app").Get<AppConfiguration>();
             _conf.rabbitMQConfiguration = conf.GetSection("rabbitmq").Get<RabbitMQConfiguration>();
             _rmq = new RMQ(_conf);
         }

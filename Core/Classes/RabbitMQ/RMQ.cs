@@ -29,8 +29,9 @@ namespace Scraper.Core.Classes.RabbitMQ
                 UserName = conf.rabbitMQConfiguration.username,
                 Password = conf.rabbitMQConfiguration.password,
                 Port = conf.rabbitMQConfiguration.port,
-                HostName = conf.rabbitMQConfiguration.hostname
-            }; 
+                HostName = conf.rabbitMQConfiguration.hostname,
+                ClientProvidedName = $"{conf.appConfiguration.name} {conf.appConfiguration.version}"
+            };
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
         }
