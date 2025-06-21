@@ -129,7 +129,7 @@ namespace Scraper.Core.Classes.Uploader
                         }
                     }
                 }
-                directory.rootPath = Path.Combine(conf.appConfiguration.containerized ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root, "media", "persons");
+                directory.rootPath = Path.Combine(conf.appConfiguration.path, "media", "persons");
             }
         }
     }

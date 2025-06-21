@@ -200,7 +200,7 @@ namespace Scraper.Core.Sources
             server.execute($"v1.0/titles/{createdTitle.slug}/covers", title.covers, Method.Post);
 
             server.execute($"v1.0/titles/{createdTitle.slug}/genres", title, Method.Post);
-            directory.rootPath = Path.Combine(conf.appConfiguration.containerized ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root, "media");
+            directory.rootPath = Path.Combine(conf.appConfiguration.path, "media");
             directory.createDirectory("persons");
 
             RemangaUploader uploader = new RemangaUploader(directory, conf, rmq);
@@ -267,7 +267,7 @@ namespace Scraper.Core.Sources
 
             rmq.send("information", "informationLog", new LogDTO($"<b>[{DateTime.Now.ToString("HH:mm:ss")}]:</b> Получение информации о тайтле {title.name}"));
 
-            directory = new CustomDirectory(conf.appConfiguration.containerized ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root);
+            directory = new CustomDirectory(conf.appConfiguration.path);
             directory.createDirectory("media");
             directory.createDirectory("titles");
 
@@ -512,7 +512,7 @@ namespace Scraper.Core.Sources
 
         public void getImages()
         {
-            directory.rootPath = Path.Combine(conf.appConfiguration.containerized ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root, "media", "titles", title.path);
+            directory.rootPath = Path.Combine(conf.appConfiguration.path, "media", "titles", title.path);
 
             RemangaUploader remangaUploader = new RemangaUploader(directory, conf, rmq);
 

@@ -31,7 +31,7 @@ public class Program
             {
                 var configuration = new ConfigurationBuilder()
                     .AddJsonFile("settings.json", false, true)
-                    //.AddEnvironmentVariables()
+                    .AddEnvironmentVariables()
                     .Build();
                 x.AddConfiguration(configuration);
             })

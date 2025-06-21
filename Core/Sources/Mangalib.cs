@@ -234,7 +234,7 @@ namespace Scraper.Core.Sources
                 title.covers.Add(new Image(cover.cover.orig));
             }
 
-            CustomDirectory directory = new CustomDirectory(conf.appConfiguration.containerized ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root);
+            CustomDirectory directory = new CustomDirectory(conf.appConfiguration.path);
             directory.createDirectory("media");
             directory.createDirectory("titles");
             directory.createDirectory(title.path);
@@ -302,7 +302,7 @@ namespace Scraper.Core.Sources
                 new KeyValuePair<string, string>("ru_name",title.name)
             };
 
-            CustomDirectory directory = new CustomDirectory(conf.appConfiguration.containerized?conf.appConfiguration.prod_root:conf.appConfiguration.local_root);
+            CustomDirectory directory = new CustomDirectory(conf.appConfiguration.path);
             directory.createDirectory("media");
             directory.createDirectory("persons");
 
@@ -354,6 +354,8 @@ namespace Scraper.Core.Sources
                 var url = rmq.rmqMessage.RequestDTO.titleDTO.url != null ? Regex.Replace(Regex.Replace(rmq.rmqMessage.RequestDTO.titleDTO.url, @"\?[a-z&=\d]+$", ""), "https://mangalib.me/ru/", "") : driver.Url.Split("/")[driver.Url.Split("/").Length - 1];
                 var _url = url.Split("/");
                 url = _url[_url.Length - 1];
+
+                logger.LogInformation($"current url: {url}");
 
                 externalServer.externalExecute($"/{url}/chapters", RestSharp.Method.Get);
 
@@ -423,7 +425,7 @@ namespace Scraper.Core.Sources
         /// </summary>
         public void getImages()
         {
-            CustomDirectory directory = new CustomDirectory(Path.Combine(conf.appConfiguration.containerized ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root, "media", "titles"));
+            CustomDirectory directory = new CustomDirectory(Path.Combine(conf.appConfiguration.path, "media", "titles"));
 
             MangalibUploader uploader = new MangalibUploader(directory, conf, rmq);
 
@@ -438,7 +440,7 @@ namespace Scraper.Core.Sources
 
             foreach (var chapter in title.chapters)
             {
-                directory.rootPath = Path.Combine(conf.appConfiguration.containerized ? conf.appConfiguration.prod_root : conf.appConfiguration.local_root, "media", "titles", title.path);
+                directory.rootPath = Path.Combine(conf.appConfiguration.path, "media", "titles", title.path);
                 directory.createDirectory(chapter.volume);
                 directory.createDirectory(chapter.number);
                 directory.createDirectory(chapter.translator.altName);

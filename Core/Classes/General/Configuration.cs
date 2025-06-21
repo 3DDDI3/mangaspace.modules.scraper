@@ -27,8 +27,7 @@
     {
         public string name { get; set; }
         public string version { get; set; }
-        public string local_root {  get; set; }
-        public string prod_root {  get; set; }
+        public string path {  get; set; }
         public bool containerized { get; set; }
     }
 
