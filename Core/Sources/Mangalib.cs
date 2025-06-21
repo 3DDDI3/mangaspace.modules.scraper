@@ -1,27 +1,28 @@
-﻿using Scraper.Core.Interfaces;
-using Scraper.Core.Classes;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Edge;
-using MangalibJson = Scraper.Core.Json.Mangalib;
-using Scraper.Core.Enums;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using Scraper.Core.Json.Mangalib;
-using System;
-using Chapter = Scraper.Core.Classes.General.Chapter;
-using Page = Scraper.Core.Classes.General.Page;
-using Scraper.Core.Classes.General;
-using Scraper.Core.Classes.Uploader;
-using Microsoft.Extensions.Logging;
-using Scraper.Core.Classes.RabbitMQ;
-using Scraper.Core.DTO;
 using RestSharp;
 using RussianTransliteration;
+using Scraper.Core.Classes;
+using Scraper.Core.Classes.General;
+using Scraper.Core.Classes.RabbitMQ;
+using Scraper.Core.Classes.Uploader;
+using Scraper.Core.DTO;
+using Scraper.Core.Enums;
+using Scraper.Core.Interfaces;
+using Scraper.Core.Json.Mangalib;
 using Scraper.Core.Json.Mangaovh;
-using System.Xml.Linq;
 using Scraper.Core.Json.Remanga;
+using System;
 using System.Diagnostics;
-using Microsoft.Extensions.Options;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Chapter = Scraper.Core.Classes.General.Chapter;
+using MangalibJson = Scraper.Core.Json.Mangalib;
+using Page = Scraper.Core.Classes.General.Page;
 
 namespace Scraper.Core.Sources
 {
@@ -145,7 +146,11 @@ namespace Scraper.Core.Sources
                 };
 
             externalServer.externalExecute($"/{url}", Method.Get, args);
-            _title = JsonConvert.DeserializeObject<MangalibJson.Title>(Regex.Replace(externalServer.response.Content, @"(^{""data"":)|(,""meta"":{""\w+"":""\w+""}}$)", ""));
+            if (Regex.Match(externalServer.response.Content, "\"meta\"").Success)
+                _title = JsonConvert.DeserializeObject<MangalibJson.Title>(Regex.Replace(externalServer.response.Content, @"(^{""data"":)|(,""meta"":{""\w+"":""\w+""}}$)", ""));
+            else
+                _title = JsonConvert.DeserializeObject<MangalibJson.Title>(Regex.Replace(externalServer.response.Content, @"(^{""data"":)|(\}$)", ""));
+
 
             title.name = _title.rus_name;
             title.altName = _title.eng_name;
@@ -353,7 +358,7 @@ namespace Scraper.Core.Sources
                 externalServer.externalExecute($"/{url}/chapters", RestSharp.Method.Get);
 
                 MangalibJson.Chapters[] chapters = JsonConvert.DeserializeObject<MangalibJson.Chapters[]>(Regex.Replace(externalServer.response.Content, @"(""data"":)|(^{)|(}$)", ""));
-                chapters = chapters.Take(5).ToArray();                   
+                chapters = chapters.Take(5).ToArray();
 
                 foreach (var chapter in chapters)
                 {
@@ -398,7 +403,7 @@ namespace Scraper.Core.Sources
                                         _chapter.teams.First().name,
                                         chapter.name,
                                         chapter.Equals(chapters.First()),
-                                        chapter.Equals(chapters.Last())
+                                        chapter.Equals(chapters.Last()) && branch.Equals(chapter.branches.Last())
                                     )
                             }),
                             new ScraperDTO("", "")

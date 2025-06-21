@@ -1,178 +1,722 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Scraper.Core.ActionHandlers.BaseActionHandler" Collapsed="true">
+    <Position X="24.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAABAAAAA=</HashCode>
+      <FileName>Core\ActionHandlers\BaseActionHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.ActionHandlers.MangalibHandler" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="22.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\ActionHandlers\MangalibHandler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Scraper.Core.ActionHandlers.RemangaHandler" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\ActionHandlers\RemangaHandler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
   <Class Name="Scraper.Core.Classes.General.Chapter" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="13" Y="0.75" Width="1.5" />
+    <Position X="13.75" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAQAAAAAAAAAAAEBAMAAAAAAAAAAAKAAA=</HashCode>
       <FileName>Core\Classes\General\Chapter.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Scraper.Core.Classes.General.Configuration" Collapsed="true">
-    <Position X="14.75" Y="0.75" Width="1.5" />
+    <Position X="24.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAEBAAAAAAAAABAAAA=</HashCode>
       <FileName>Core\Classes\General\Configuration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Scraper.Core.Classes.General.ScraperConfiguration" Collapsed="true">
-    <Position X="13" Y="3.75" Width="1.5" />
+    <Position X="15.5" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAAAAAAAAACAAAAAAAAAAAAAAIAgAAAA=</HashCode>
       <FileName>Core\Classes\General\Configuration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Scraper.Core.Classes.General.ApiConfiguration" Collapsed="true">
-    <Position X="9.5" Y="0.75" Width="1.5" />
+    <Position X="20.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
       <FileName>Core\Classes\General\Configuration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Scraper.Core.Classes.General.AppConfiguration" Collapsed="true">
-    <Position X="11.25" Y="0.75" Width="1.5" />
+    <Position X="22.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAgACAAAAAAAACAAAAAAAAAAAAEAAAAAAAAACAAAAA=</HashCode>
       <FileName>Core\Classes\General\Configuration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Scraper.Core.Classes.General.ServerConfiguration" Collapsed="true">
-    <Position X="18.25" Y="1.75" Width="1.5" />
+    <Position X="22.5" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAAAIAAAAAAACAgAAAAA=</HashCode>
       <FileName>Core\Classes\General\Configuration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Scraper.Core.Classes.General.RabbitMQConfiguration" Collapsed="true">
-    <Position X="13" Y="2.75" Width="1.5" />
+    <Position X="10.25" Y="5.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAIAAAAAAAAAAAEAAAAAAAgAAAAAAgAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAIAAAAAAAAAAAEAAAAAAAgCAAAAAgAAAAA=</HashCode>
       <FileName>Core\Classes\General\Configuration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Scraper.Core.Classes.General.CustomDirectory" Collapsed="true">
-    <Position X="16.5" Y="0.75" Width="1.5" />
+    <Position X="13.75" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAACAAAAAAA=</HashCode>
       <FileName>Core\Classes\General\Directory.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Scraper.Core.Classes.General.FTPServer" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="9.5" Y="1.75" Width="1.5" />
+    <Position X="19" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAAAIAAAAAAACBgAAAAA=</HashCode>
       <FileName>Core\Classes\General\FTPServer.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Scraper.Core.Classes.General.Image" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="11.25" Y="1.75" Width="1.5" />
+    <Position X="24.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
       <FileName>Core\Classes\General\Image.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Scraper.Core.Classes.General.Page" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="9.5" Y="2.75" Width="1.5" />
+    <Position X="17.25" Y="4.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAIAAIAgAAAA=</HashCode>
       <FileName>Core\Classes\General\Page.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Scraper.Core.Classes.General.Person" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="11.25" Y="2.75" Width="1.5" />
+    <Position X="22.5" Y="4.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAQAAAAAAAAAIAAAAAAAEAANAAAAAACAAAAAAAA=</HashCode>
       <FileName>Core\Classes\General\Person.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Scraper.Core.Classes.General.RemangaPage" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="14.75" Y="2.75" Width="1.5" />
+    <Position X="17.25" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAIAAIAgAAAA=</HashCode>
       <FileName>Core\Classes\General\RemangaPage.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Scraper.Core.Classes.General.Server" Collapsed="true">
-    <Position X="18.25" Y="2.75" Width="1.5" />
+    <Position X="20.75" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAEAAAAACAAACAAAEAACABAAAAAAAAAAABAgAAAA=</HashCode>
       <FileName>Core\Classes\General\Server.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Scraper.Core.Classes.General.Title" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="16.5" Y="2.75" Width="1.5" />
+    <Position X="10.25" Y="7.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>CAAAAARAAAAAQAAgIAACAAADAAANAAACJQCAAAAAQAA=</HashCode>
       <FileName>Core\Classes\General\Title.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Scraper.Core.Classes.RabbitMQ.RMQ" Collapsed="true">
-    <Position X="9.5" Y="3.75" Width="1.5" />
+    <Position X="12" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAgYAAQAAABAAAAAAEAAAIAAAAAAAAAAAA=</HashCode>
       <FileName>Core\Classes\RabbitMQ\RMQ.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Scraper.Core.Classes.RabbitMQ.RMQMessage" Collapsed="true">
-    <Position X="11.25" Y="3.75" Width="1.5" />
+    <Position X="13.75" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAIQAAAAAAAABAAAAAAAAAAAAA=</HashCode>
       <FileName>Core\Classes\RabbitMQ\RMQMessage.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Scraper.Core.Classes.Uploader.MangaClubUploader" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="13" Y="1.75" Width="1.5" />
+    <Position X="17.25" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQEAIAAAAAAAAAAAAAAAAAIEAQAAAAAAAAAAAAAAAI=</HashCode>
       <FileName>Core\Classes\Uploader\MangaClubUploader.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Scraper.Core.Classes.Uploader.MangalibUploader" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="14.75" Y="1.75" Width="1.5" />
+    <Position X="24.25" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQEAIAAAAASAAAAAAAAAAAIFAQAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Core\Classes\Uploader\MangalibUploader.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Scraper.Core.Classes.Uploader.MangaovhUploader" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="18.25" Y="0.75" Width="1.5" />
+    <Position X="10.25" Y="4.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQEAIAAAAAAAAAAAAAAAAAIEAQAAAAAAAAAAAAAAAI=</HashCode>
       <FileName>Core\Classes\Uploader\MangaovhUploader.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Scraper.Core.Classes.Uploader.RemangaUploader" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="16.5" Y="1.75" Width="1.5" />
+    <Position X="8.5" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQEAIAAAAASAAAAAAAAAAAIFAQAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Core\Classes\Uploader\RemangaUploader.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="Scraper.Core.Sources.Mangalib" Collapsed="true">
-    <Position X="9.5" Y="4.75" Width="1.5" />
+  <Class Name="Scraper.Core.DTO.BaseDTO" Collapsed="true">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAABAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Core\DTO\BaseDTO.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.DTO.ChapterDTO" Collapsed="true">
+    <Position X="20.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAABAAAABAsAAAAAAAAAAACAAA=</HashCode>
+      <FileName>Core\DTO\ChapterDTO.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.DTO.LogDTO" Collapsed="true">
+    <Position X="13.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>Core\DTO\LogDTO.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.DTO.RequestDTO" Collapsed="true">
+    <Position X="3.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\DTO\RequestDTO.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.DTO.ResponseDTO" Collapsed="true">
+    <Position X="6" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\DTO\ResponseDTO.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.DTO.ScraperDTO" Collapsed="true">
+    <Position X="17.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>Core\DTO\ScraperDTO.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.DTO.TitleDTO" Collapsed="true">
+    <Position X="17.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAQAAAAAAAAAAAMAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\DTO\TitleDTO.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Errors.CustomException" Collapsed="true">
+    <Position X="15.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Errors\CustomException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Factories.ActionHandlerFactory" Collapsed="true">
+    <Position X="17.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Core\Factories\ActionHandlerFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Handlers.MessageHandler&lt;T&gt;" Collapsed="true">
+    <Position X="12" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABACAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Handlers\MessageHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.Branch" Collapsed="true">
+    <Position X="12" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Mangalib\Branch.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.Chapter" Collapsed="true">
+    <Position X="19" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACgAQAAAAAAAAAAAAAAEAAAAAAAAAAACAAA=</HashCode>
+      <FileName>Core\Json\Mangalib\Chapter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.Chapters" Collapsed="true">
+    <Position X="22.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAAAAAAEAAAAAAAAAACCAgA=</HashCode>
+      <FileName>Core\Json\Mangalib\Chapters.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.Cover" Collapsed="true">
+    <Position X="10.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>Core\Json\Mangalib\Cover.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.Covers" Collapsed="true">
+    <Position X="12" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Mangalib\Covers.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.MangaLib" Collapsed="true">
+    <Position X="20.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Mangalib\MangaLib.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.Page" Collapsed="true">
+    <Position X="19" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Mangalib\Page.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.Title" Collapsed="true">
+    <Position X="12" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAQAAgAAAAgCEAACAgCAAAFAAAAYAAAAgBAgAA=</HashCode>
+      <FileName>Core\Json\Mangalib\Title.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.Type" Collapsed="true">
+    <Position X="10.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Mangalib\Title.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.Restriction" Collapsed="true">
+    <Position X="10.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Mangalib\Title.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.Genre" Collapsed="true">
+    <Position X="20.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Mangalib\Title.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.Format" Collapsed="true">
+    <Position X="17.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Mangalib\Title.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.Status" Collapsed="true">
+    <Position X="8.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Mangalib\Title.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.TitleAlt" Collapsed="true">
+    <Position X="15.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Mangalib\TitleAlt.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangalib.Translator" Collapsed="true">
+    <Position X="24.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAIAAAEAAAAIAAAAIAAAAA=</HashCode>
+      <FileName>Core\Json\Mangalib\Translator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangaovh.Branch" Collapsed="true">
+    <Position X="10.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Core\Json\Mangaovh\Branch.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangaovh.Chapter" Collapsed="true">
+    <Position X="17.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAAAAQAEAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Core\Json\Mangaovh\Chapter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangaovh.Page" Collapsed="true">
+    <Position X="15.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Mangaovh\Page.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangaovh.TitleJson" Collapsed="true">
+    <Position X="19" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Mangaovh\TitleJson.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Mangaovh.Translator" Collapsed="true">
+    <Position X="20.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Core\Json\Mangaovh\Translator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.Branch" Collapsed="true">
+    <Position X="8.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Core\Json\Remanga\Branch.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.RemangaPublisher" Collapsed="true">
+    <Position X="19" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAFAAAAIAAAAAAAAgA=</HashCode>
+      <FileName>Core\Json\Remanga\Branch.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.RemangaCover" Collapsed="true">
+    <Position X="13.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Branch.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.RemangaType" Collapsed="true">
+    <Position X="24.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Core\Json\Remanga\Branch.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.Chapter" Collapsed="true">
+    <Position X="15.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAABAAAAAAAAAAAAAgAAAAAAAIAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Chapter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga._Chapter" Collapsed="true">
+    <Position X="8.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAABACAAAAAAAAAAAAAAGAAAAAAAAAAABAgA=</HashCode>
+      <FileName>Core\Json\Remanga\Chapter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga._Publisher" Collapsed="true">
+    <Position X="12" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAEAAAAIAAAAAAAAgA=</HashCode>
+      <FileName>Core\Json\Remanga\Chapter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.Cover" Collapsed="true">
+    <Position X="8.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Chapter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.Page" Collapsed="true">
+    <Position X="13.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAACBAAAAAAAAAAAAAAAAGAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Page.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.Pages" Collapsed="true">
+    <Position X="20.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA=</HashCode>
+      <FileName>Core\Json\Remanga\Page.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.Publisher" Collapsed="true">
+    <Position X="8.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAEAAAAIAAAAAAAAgA=</HashCode>
+      <FileName>Core\Json\Remanga\Publisher.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga._RemangaCover" Collapsed="true">
+    <Position X="13.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Publisher.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.RemangaTitle" Collapsed="true">
+    <Position X="20.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\RemangaTitle.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.RemangaTitleResult" Collapsed="true">
+    <Position X="22.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\RemangaTitle.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.Title" Collapsed="true">
+    <Position X="13.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAACAAAIAEABAACAAABAAAgIAAAAICAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Title.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.Type" Collapsed="true">
+    <Position X="12" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Title.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.AgeLimit" Collapsed="true">
+    <Position X="19" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Title.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.Status" Collapsed="true">
+    <Position X="24.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Title.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga._TranslateStatus" Collapsed="true">
+    <Position X="15.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Title.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga._Cover" Collapsed="true">
+    <Position X="10.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAACAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Title.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.Genres" Collapsed="true">
+    <Position X="22.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Title.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.Translator" Collapsed="true">
+    <Position X="22.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Translator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.TranslatorContent" Collapsed="true">
+    <Position X="8.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAIAAAAAAAAAAMAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Translator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.Links" Collapsed="true">
+    <Position X="12" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAAEAAAAIYAAAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Translator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Json.Remanga.Img" Collapsed="true">
+    <Position X="8.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Json\Remanga\Translator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Services.InternetCheckService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="10.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAQAAAAKAgAAAAAAgAAAAAIAAAABAAAQAAAAAAABA=</HashCode>
+      <FileName>Core\Services\InternetCheckService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Scraper.Core.Services.ScraperService" Collapsed="true">
+    <Position X="19" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAQIAAAAAAAAAAAAgAAAAAJgAABBAAAAAAAAABAEA=</HashCode>
+      <FileName>Core\Services\ScraperService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scraper.Core.Sources.MangaClub" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UAAAAAAAQgAAAAACNBAAAACAAAAAAAAAAEACIAAAIAI=</HashCode>
+      <FileName>Core\Sources\MangaClub.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Scraper.Core.Sources.Mangalib" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="19" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>UAAAAAAAQoAiAAACNBAAAACgBAAAAAAAAEACIAAAIAI=</HashCode>
       <FileName>Core\Sources\Mangalib.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="Scraper.Core.Sources.Remanga" Collapsed="true">
-    <Position X="11.25" Y="4.75" Width="1.5" />
+  <Class Name="Scraper.Core.Sources.Mangaovh" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="8.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UAAAAAAAQgAAAAACNBAAAACAAAAAAAAAAEACIAAAIAI=</HashCode>
+      <FileName>Core\Sources\Mangaovh.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Scraper.Core.Sources.Remanga" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="12" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>UAAAAAAAQAASAIACNBAAAACgBAAAAAAAAEACIAAAIAI=</HashCode>
       <FileName>Core\Sources\Remanga.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
+  <Class Name="Program" Collapsed="true">
+    <Position X="24.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Scraper.Core.Interfaces.IActionHandler" Collapsed="true">
+    <Position X="8.5" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Interfaces\IActionHandler.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Scraper.Core.Interfaces.IChapter" Collapsed="true">
+    <Position X="10.25" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAAAEBAMAAAAAAAAAAAKAAA=</HashCode>
+      <FileName>Core\Interfaces\IChapter.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Scraper.Core.Interfaces.IFTPServer" Collapsed="true">
+    <Position X="12" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAEAAAAIAAAAAAACBgAEAAA=</HashCode>
+      <FileName>Core\Interfaces\IFTPServer.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Scraper.Core.Interfaces.IImage" Collapsed="true">
+    <Position X="13.75" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Core\Interfaces\IImage.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Scraper.Core.Interfaces.IPage" Collapsed="true">
+    <Position X="15.5" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAIAAIAgAAAA=</HashCode>
+      <FileName>Core\Interfaces\IPage.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Scraper.Core.Interfaces.IPageRange" Collapsed="true">
+    <Position X="8.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Interfaces\IPageRange.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Scraper.Core.Interfaces.IPerson" Collapsed="true">
+    <Position X="10.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAAAAAAIAAAAAAAEAANAAAAAACAAAAAAAA=</HashCode>
+      <FileName>Core\Interfaces\IPerson.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Scraper.Core.Interfaces.IScraper" Collapsed="true">
+    <Position X="12" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UAAAAAAAQAAAAAAAFBAAAACAAAAAAAAAAEACIAAAIAI=</HashCode>
+      <FileName>Core\Interfaces\IScraper.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Scraper.Core.Interfaces.ITitle" Collapsed="true">
+    <Position X="13.75" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAABAAAAAQAAgIAACAAADAAANAAACJQCAAAAAQAA=</HashCode>
+      <FileName>Core\Interfaces\ITitle.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Scraper.Core.Interfaces.IUploader" Collapsed="true">
+    <Position X="15.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAIAAAAAAAAAAAAAAAAAIEAQAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Interfaces\IUploader.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Scraper.Core.Enums.AgeLimiter" Collapsed="true">
+    <Position X="8.5" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAgA=</HashCode>
+      <FileName>Core\Enums\AgeLimiter.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Scraper.Core.Enums.PersonType" Collapsed="true">
+    <Position X="10.25" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAAAAAAAAABIAAABAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Core\Enums\PersonType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Scraper.Core.Enums.TitleStatus" Collapsed="true">
+    <Position X="12" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAoAQAAAAAAAAAAEAAAAAAAAQAAAAAAAQAA=</HashCode>
+      <FileName>Core\Enums\TitleStatus.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Scraper.Core.Enums.TranslateStatus" Collapsed="true">
+    <Position X="13.75" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAoAAAAAAAAAAAAEAAAAAAAgQAAAAAAAAAA=</HashCode>
+      <FileName>Core\Enums\TranslateStatus.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

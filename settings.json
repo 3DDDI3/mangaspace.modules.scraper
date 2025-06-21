@@ -2,50 +2,102 @@
   "app": {
     "name": "Scraper",
     "version": "1.0.0",
-    "containerized": false,
-    //"containerized": true,
+    //"containerized": false,
+    "containerized": true,
     "local_root": "\\\\wsl$\\Ubuntu\\home\\laravel\\storage\\",
     "prod_root": "storage/"
   },
-    "api": {
-        "token": "11|ztVTRxo4ahNk0UQrmPWrvYa4QKd1TtNTX15yqyGkba9cb399",
-        "baseUrl": "http://api.mangaspace.ru:83"
-    },
-    "remanga": {
-        "baseUrl": "https://remanga.org/",
-        "catalogUrl": "manga",
-        "pages": "?page=",
-        "authorization": ""
-    },
-    "mangalib": {
-        "baseUrl": "https://mangalib.me/ru",
-        "catalogUrl": "catalog",
-        "pages": "?page=",
-        "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYTU1OGFjMGNmZWQ3ZjcyNmYyYWRiNTZhYzY0NzY5NmY4ZGE3NWQ3OGEzM2U1NjViMzdmNzM2NjU5MGZhZTljMjZlYjljMzJkZjNiZWQzMDEiLCJpYXQiOjE3NDcwODA1NDguMjQ3MTY0LCJuYmYiOjE3NDcwODA1NDguMjQ3MTY2LCJleHAiOjE3NDk3NTg5NDguMjQzNDM0LCJzdWIiOiI1NjQ3MjkiLCJzY29wZXMiOltdfQ.gh1k53PXoY-RXvXfYmY2wFxlbZ3ncT75DSdTXuZwKIzy5mmS9tBvlcHAV1eq6h31cLk2zJDNoZP_p2sXtrcZ_8M1_KI_VvxrFi-28u3mEVxpCVj78YsuWwB4VW-NMOBjkCYTcTHAJ3yMohp0nrkBYUcB-dZD6beO_UXPqw_SgJLCFcbPe2jykjYtlDXMkuyvkFGR7oK2HAEYmtL1qLIFfn7kji7v-XGWqIC-kHW9YpPinrJPv1oizb6eMP8TZCst2sIMgTZQ9Ec83izCw5crTIeyEYnV0mcsm7yESFPjDCKw_9-tJX67QZBC7VOqJMrtwe8GiL4D6rVKFmgjFLbd8puwbzr02bnGT1AJUPHkQoAiDnLWmdnYyHR8Ak83Sg9-jIJtB1eLTpPuu574nvThPd7jOvKYJaA7fIKyszIDwQctzwVhR7EpIsPixSbpBs5WuekNh-EJGbeNAbMqJQVL5_Z_CyO0ctNTNdAOMd27KXJKqHC46mGde7VVHyYxgIFzR_Auz5RVhK1KPwqyv9VfnJZyNwh2rkTRvEYNvMXWIteRegrnqrveQ6cBbEbCICElFYdKhp3WLciI8u00A2DeeYwU-LyGAZ_jrjsRvVtuYrtKV2uTlQRC--cQjqwANbUjENnxPCeVeUcckA5IrrGwi5AqA3d04DA0PFM3l3oIiCI"
-    },
-    "mangaovh": {
-        "baseUrl": "https://manga.ovh/",
-        "catalogUrl": "content",
-        "pages": "",
-        "authorization":""
-    },
-    "mangaclub": {
-        "baseUrl": "https://mangaclub.ru/",
-        "catalogUrl": "mangas",
-        "pages": "page/",
-        "authorization":""
-    },
-    "server": {
-        "url": "5.188.44.210",
-        "username": "admin",
-        "password": "w823eG7a5W3l",
-        "rootPath": ""
-    },
-    "rabbitmq": {
-      "username": "guest",
-      "password": "guest",
-      "port": 5672,
-      "hostname": "127.0.0.1"
-      //"hostname": "rabbitmq"
-    }
+  "api": {
+    "token": "-61|n6ZpopnU7xAF3r1O7tNVJPQXjSXtIR5mPAZj2uROd7afb9fb",
+    "baseUrl": "http://api.mangaspace.ru:83"
+  },
+  "remanga": {
+    "baseUrl": "https://remanga.org/",
+    "catalogUrl": "manga",
+    "pages": "?page=",
+    "authorization": ""
+  },
+  "mangalib": {
+    "baseUrl": "https://mangalib.me/ru",
+    "catalogUrl": "catalog",
+    "pages": "?page=",
+    "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYTU1OGFjMGNmZWQ3ZjcyNmYyYWRiNTZhYzY0NzY5NmY4ZGE3NWQ3OGEzM2U1NjViMzdmNzM2NjU5MGZhZTljMjZlYjljMzJkZjNiZWQzMDEiLCJpYXQiOjE3NDcwODA1NDguMjQ3MTY0LCJuYmYiOjE3NDcwODA1NDguMjQ3MTY2LCJleHAiOjE3NDk3NTg5NDguMjQzNDM0LCJzdWIiOiI1NjQ3MjkiLCJzY29wZXMiOltdfQ.gh1k53PXoY-RXvXfYmY2wFxlbZ3ncT75DSdTXuZwKIzy5mmS9tBvlcHAV1eq6h31cLk2zJDNoZP_p2sXtrcZ_8M1_KI_VvxrFi-28u3mEVxpCVj78YsuWwB4VW-NMOBjkCYTcTHAJ3yMohp0nrkBYUcB-dZD6beO_UXPqw_SgJLCFcbPe2jykjYtlDXMkuyvkFGR7oK2HAEYmtL1qLIFfn7kji7v-XGWqIC-kHW9YpPinrJPv1oizb6eMP8TZCst2sIMgTZQ9Ec83izCw5crTIeyEYnV0mcsm7yESFPjDCKw_9-tJX67QZBC7VOqJMrtwe8GiL4D6rVKFmgjFLbd8puwbzr02bnGT1AJUPHkQoAiDnLWmdnYyHR8Ak83Sg9-jIJtB1eLTpPuu574nvThPd7jOvKYJaA7fIKyszIDwQctzwVhR7EpIsPixSbpBs5WuekNh-EJGbeNAbMqJQVL5_Z_CyO0ctNTNdAOMd27KXJKqHC46mGde7VVHyYxgIFzR_Auz5RVhK1KPwqyv9VfnJZyNwh2rkTRvEYNvMXWIteRegrnqrveQ6cBbEbCICElFYdKhp3WLciI8u00A2DeeYwU-LyGAZ_jrjsRvVtuYrtKV2uTlQRC--cQjqwANbUjENnxPCeVeUcckA5IrrGwi5AqA3d04DA0PFM3l3oIiCI"
+  },
+  "mangaovh": {
+    "baseUrl": "https://manga.ovh/",
+    "catalogUrl": "content",
+    "pages": "",
+    "authorization": ""
+  },
+  "mangaclub": {
+    "baseUrl": "https://mangaclub.ru/",
+    "catalogUrl": "mangas",
+    "pages": "page/",
+    "authorization": ""
+  },
+  "server": {
+    "url": "5.188.44.210",
+    "username": "admin",
+    "password": "w823eG7a5W3l",
+    "rootPath": ""
+  },
+  "rabbitmq": {
+    "username": "guest",
+    "password": "guest",
+    "port": 5672,
+    "hostname": "rabbitmq"
+    //"hostname": "127.0.0.1"
+  }
 }
+
+//{
+//  "app": {
+//    "name": "Scraper",
+//    "version": "1.0.0",
+//    "containerized": false,
+//    //"containerized": true,
+//    "local_root": "\\\\wsl$\\Ubuntu\\home\\laravel\\storage\\",
+//    "prod_root": "storage/"
+//  },
+//  "api": {
+//    "token": "61|n6ZpopnU7xAF3r1O7tNVJPQXjSXtIR5mPAZj2uROd7afb9fb",
+//    "baseUrl": "http://api.mangaspace.ru:83"
+//  },
+//  "remanga": {
+//    "baseUrl": "https://remanga.org/",
+//    "catalogUrl": "manga",
+//    "pages": "?page=",
+//    "authorization": ""
+//  },
+//  "mangalib": {
+//    "baseUrl": "https://mangalib.me/ru",
+//    "catalogUrl": "catalog",
+//    "pages": "?page=",
+//    "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYTU1OGFjMGNmZWQ3ZjcyNmYyYWRiNTZhYzY0NzY5NmY4ZGE3NWQ3OGEzM2U1NjViMzdmNzM2NjU5MGZhZTljMjZlYjljMzJkZjNiZWQzMDEiLCJpYXQiOjE3NDcwODA1NDguMjQ3MTY0LCJuYmYiOjE3NDcwODA1NDguMjQ3MTY2LCJleHAiOjE3NDk3NTg5NDguMjQzNDM0LCJzdWIiOiI1NjQ3MjkiLCJzY29wZXMiOltdfQ.gh1k53PXoY-RXvXfYmY2wFxlbZ3ncT75DSdTXuZwKIzy5mmS9tBvlcHAV1eq6h31cLk2zJDNoZP_p2sXtrcZ_8M1_KI_VvxrFi-28u3mEVxpCVj78YsuWwB4VW-NMOBjkCYTcTHAJ3yMohp0nrkBYUcB-dZD6beO_UXPqw_SgJLCFcbPe2jykjYtlDXMkuyvkFGR7oK2HAEYmtL1qLIFfn7kji7v-XGWqIC-kHW9YpPinrJPv1oizb6eMP8TZCst2sIMgTZQ9Ec83izCw5crTIeyEYnV0mcsm7yESFPjDCKw_9-tJX67QZBC7VOqJMrtwe8GiL4D6rVKFmgjFLbd8puwbzr02bnGT1AJUPHkQoAiDnLWmdnYyHR8Ak83Sg9-jIJtB1eLTpPuu574nvThPd7jOvKYJaA7fIKyszIDwQctzwVhR7EpIsPixSbpBs5WuekNh-EJGbeNAbMqJQVL5_Z_CyO0ctNTNdAOMd27KXJKqHC46mGde7VVHyYxgIFzR_Auz5RVhK1KPwqyv9VfnJZyNwh2rkTRvEYNvMXWIteRegrnqrveQ6cBbEbCICElFYdKhp3WLciI8u00A2DeeYwU-LyGAZ_jrjsRvVtuYrtKV2uTlQRC--cQjqwANbUjENnxPCeVeUcckA5IrrGwi5AqA3d04DA0PFM3l3oIiCI"
+//  },
+//  "mangaovh": {
+//    "baseUrl": "https://manga.ovh/",
+//    "catalogUrl": "content",
+//    "pages": "",
+//    "authorization": ""
+//  },
+//  "mangaclub": {
+//    "baseUrl": "https://mangaclub.ru/",
+//    "catalogUrl": "mangas",
+//    "pages": "page/",
+//    "authorization": ""
+//  },
+//  "server": {
+//    "url": "5.188.44.210",
+//    "username": "admin",
+//    "password": "w823eG7a5W3l",
+//    "rootPath": ""
+//  },
+//  "rabbitmq": {
+//    "username": "guest",
+//    "password": "guest",
+//    "port": 5672,
+//    "hostname": "127.0.0.1"
+//    //"hostname": "rabbitmq"
+//  }
+//}

@@ -14,7 +14,7 @@ namespace Scraper.Core.ActionHandlers
     {
         public void Handle(Configuration conf, IConfiguration configuration, RMQ rmq, ILogger logger)
         {
-            conf.scraperConfiguration = configuration.GetSection("mangalib").Get<ScraperConfiguration>();
+            configuration.GetSection("mangalib").Bind(conf.scraperConfiguration);
             var manglib = new Mangalib(conf, rmq, logger);
             var messageHandler = new MessageHandler<Mangalib>(manglib);
             messageHandler.HandleMessage(rmq.rmqMessage.RequestDTO.scraperDTO.action);
